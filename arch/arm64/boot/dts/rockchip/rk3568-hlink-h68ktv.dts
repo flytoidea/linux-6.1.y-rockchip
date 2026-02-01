@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 // Copyright (c) 2022 AmadeusGhost <amadeus@jmu.edu.cn>
+// Modified for Hlink H68KTV based on Android DTS
 
 /dts-v1/;
 
@@ -15,10 +16,10 @@
 	compatible = "hlink,h68ktv", "rockchip,rk3568";
 
 	aliases {
-		ethernet0 = &gmac0;  // 从Android设备树看，这是GMAC0
-		ethernet1 = &gmac1;  // 从Android设备树看，这是GMAC1
-		mmc0 = &sdmmc0;      // 保留，但您的设备可能没有SD卡槽
-		mmc1 = &sdhci;       // eMMC
+		ethernet0 = &gmac0;
+		ethernet1 = &gmac1;
+		mmc0 = &sdmmc0;
+		mmc1 = &sdhci;
 
 		led-boot = &led_work;
 		led-failsafe = &led_work;
@@ -41,48 +42,37 @@
 		};
 	};
 
-	/* 
-	 * 根据Android设备树，按键是ADC按键，不是GPIO按键
-	 * 删除原来的GPIO按键，改为ADC按键
-	 */
-	adc-keys {
-		compatible = "adc-keys";
-		io-channels = <&saradc 0>;
-		io-channel-names = "buttons";
-		keyup-threshold-microvolt = <1800000>;
-		poll-interval = <100>;
+	keys {
+		compatible = "gpio-keys";
+		pinctrl-0 = <&reset_button_pin>;
+		pinctrl-names = "default";
 
-		vol-up-key {
-			label = "volume up";
-			linux,code = <KEY_VOLUMEUP>;
-			press-threshold-microvolt = <1750>;
-		};
-
-		vol-down-key {
-			label = "volume down";
-			linux,code = <KEY_VOLUMEDOWN>;
-			press-threshold-microvolt = <297500>;
-		};
-
-		menu-key {
-			label = "menu";
-			linux,code = <KEY_MENU>;
-			press-threshold-microvolt = <980000>;
-		};
-
-		back-key {
-			label = "back";
-			linux,code = <KEY_BACK>;
-			press-threshold-microvolt = <1305500>;
+		reset {
+			label = "reset";
+			gpios = <&gpio0 RK_PA0 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_RESTART>;
+			debounce-interval = <50>;
 		};
 	};
 
 	leds: leds {
 		compatible = "gpio-leds";
-		/* 根据Android设备树，只看到一个LED：GPIO3_A5 */
+		pinctrl-names = "default";
+		pinctrl-0 = <&led_work_en>, <&led_sata_en>, <&led_net_en>;
+
+		led_net: net {
+			label = "blue:net";
+			gpios = <&gpio3 RK_PA5 GPIO_ACTIVE_HIGH>;
+		};
+
+		led_sata: sata {
+			label = "amber:sata";
+			gpios = <&gpio3 RK_PA7 GPIO_ACTIVE_HIGH>;
+		};
+
 		led_work: work {
 			label = "green:work";
-			gpios = <&gpio3 RK_PA5 GPIO_ACTIVE_HIGH>;
+			gpios = <&gpio3 RK_PB0 GPIO_ACTIVE_HIGH>;
 		};
 	};
 
@@ -121,22 +111,18 @@
 		vin-supply = <&vcc5v0_sys>;
 	};
 
-	/* 
-	 * 根据Android设备树，您的设备有PCIe接口
-	 * 但可能没有2.5G网卡，保留PCIe电源控制
-	 */
-	vcc3v3_pcie: vcc3v3-pcie-regulator {
+	/* WiFi power for AP6275S */
+	vcc3v3_pcie2: vcc3v3-pcie2-regulator {
 		compatible = "regulator-fixed";
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
-		regulator-name = "vcc3v3_pcie";
+		regulator-name = "vcc3v3_pcie2";
 		regulator-boot-on;
 
-		enable-active-high;
-		gpio = <&gpio0 RK_PC4 GPIO_ACTIVE_HIGH>;
+		gpio = <&gpio3 RK_PD5 GPIO_ACTIVE_LOW>;
 
 		pinctrl-names = "default";
-		pinctrl-0 = <&vcc3v3_pcie_en>;
+		pinctrl-0 = <&vcc3v3_pcie2_en>;
 		vin-supply = <&vcc3v3_sys>;
 	};
 
@@ -156,7 +142,22 @@
 
 	};
 
-	/* 删除SD卡电源使能，因为您的设备可能没有SD卡槽 */
+	vcc3v3_sd_pwren: vcc3v3-sd-pwren-regulator {
+		compatible = "regulator-fixed";
+
+		regulator-name = "vcc3v3_sd_pwren";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		regulator-boot-on;
+		regulator-always-on;
+
+		enable-active-high;
+		gpio = <&gpio0 RK_PA6 GPIO_ACTIVE_HIGH>;	/* SD_PWREN */
+		vin-supply = <&vcc3v3_sys>;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&vcc3v3_sd_en>;
+	};
 
 	rk809-sound {
 		compatible = "simple-audio-card";
@@ -171,21 +172,19 @@
 			sound-dai = <&rk809>;
 		};
 	};
-
- 	/* 删除风扇节点，您的设备可能没有风扇 */
 };
 
-/* 根据Android设备树，您有以下组合PHY */
+/* 根据您的安卓设备树，这些PHY节点是在根节点下定义的，不是在芯片级DTSI中 */
 &combphy0 {
-	status = "okay";  // 用于SATA0和USB Host 0
+	status = "okay";
 };
 
 &combphy1 {
-	status = "okay";  // 用于SATA1和USB Host 1
+	status = "okay";
 };
 
 &combphy2 {
-	status = "okay";  // 用于SATA2和PCIe 2x1
+	status = "okay";
 };
 
 &cpu0 {
@@ -204,10 +203,6 @@
 	cpu-supply = <&vdd_cpu>;
 };
 
-/* 
- * 以太网配置 - 根据Android设备树调整
- * Android中GMAC0和GMAC1都有配置，保留但调整引脚
- */
 &gmac0 {
 	assigned-clocks = <&cru SCLK_GMAC0_RX_TX>, <&cru SCLK_GMAC0>;
 	assigned-clock-parents = <&cru SCLK_GMAC0_RGMII_SPEED>;
@@ -215,7 +210,6 @@
 	clock_in_out = "output";
 	phy-mode = "rgmii";
 	pinctrl-names = "default";
-	/* 根据Android设备树调整引脚 */
 	pinctrl-0 = <&gmac0_miim
 		     &gmac0_tx_bus2
 		     &gmac0_rx_bus2
@@ -224,8 +218,8 @@
 	snps,reset-gpio = <&gpio2 RK_PD3 GPIO_ACTIVE_LOW>;
 	snps,reset-active-low;
 	snps,reset-delays-us = <0 20000 100000>;
-	tx_delay = <0x3c>;  // 根据Android设备树调整
-	rx_delay = <0x2f>;  // 根据Android设备树调整
+	tx_delay = <0x2e>;
+	rx_delay = <0x28>;
 	phy-handle = <&rgmii_phy0>;
 	status = "okay";
 };
@@ -237,7 +231,6 @@
 	clock_in_out = "output";
 	phy-mode = "rgmii";
 	pinctrl-names = "default";
-	/* 根据Android设备树调整引脚 */
 	pinctrl-0 = <&gmac1m1_miim
 		     &gmac1m1_tx_bus2
 		     &gmac1m1_rx_bus2
@@ -246,8 +239,8 @@
 	snps,reset-gpio = <&gpio1 RK_PB0 GPIO_ACTIVE_LOW>;
 	snps,reset-active-low;
 	snps,reset-delays-us = <0 20000 100000>;
-	tx_delay = <0x4f>;  // 根据Android设备树调整
-	rx_delay = <0x26>;  // 根据Android设备树调整
+	tx_delay = <0x42>;
+	rx_delay = <0x25>;
 	phy-handle = <&rgmii_phy1>;
 	status = "okay";
 };
@@ -579,55 +572,62 @@
 };
 
 &mdio0 {
-	rgmii_phy0: ethernet-phy@0 {
+	rgmii_phy0: ethernet-phy@1 {
 		compatible = "ethernet-phy-ieee802.3-c22";
-		reg = <0>;
+		reg = <1>;
 		phy-supply = <&vcc3v3_sys>;
+
+		/*
+		 * RTL8211F Custom LED Mode B
+		 * LED1 (Green):  Link 10/100/1000
+		 * LED2 (Yellow): Active 10/100/1000
+		 */
+		realtek,led-data = <0xc160>;
 	};
 };
 
 &mdio1 {
-	rgmii_phy1: ethernet-phy@0 {
+	rgmii_phy1: ethernet-phy@1 {
 		compatible = "ethernet-phy-ieee802.3-c22";
-		reg = <0>;
+		reg = <1>;
 		phy-supply = <&vcc3v3_sys>;
+
+		/*
+		 * RTL8211F Custom LED Mode B
+		 * LED1 (Green):  Link 10/100/1000
+		 * LED2 (Yellow): Active 10/100/1000
+		 */
+		realtek,led-data = <0xc160>;
 	};
 };
 
-/* 
- * 根据Android设备树，您的设备有PCIe接口
- * 但可能没有2.5G网卡，保留基本PCIe配置
- */
 &pcie2x1 {
-	status = "disabled";  // 根据需求启用或禁用
-};
-
-&pcie30phy {
-	data-lanes = <1 2>;
+	reset-gpios = <&gpio2 RK_PD6 GPIO_ACTIVE_HIGH>;
+	vpcie3v3-supply = <&vcc3v3_pcie2>;
 	status = "okay";
 };
 
-&pcie3x1 {
-	status = "disabled";  // 根据您的硬件，可能没有2.5G网卡
-};
-
-&pcie3x2 {
-	/* 根据Android设备树，PCIe 3x2可能是存在的 */
-	num-lanes = <1>;
-	rockchip,init-delay-ms = <100>;
-	reset-gpios = <&gpio2 RK_PD0 GPIO_ACTIVE_HIGH>;
-	vpcie3v3-supply = <&vcc3v3_pcie>;
-	status = "okay";
-};
+/* 根据您的安卓设备树，删除PCIe3x1和PCIe3x2节点（没有2.5G网卡） */
 
 &pinctrl {
-	/* 删除原来的GPIO按键引脚配置 */
-	
+	button {
+		reset_button_pin: reset-button-pin {
+			rockchip,pins = <0 RK_PA0 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+	};
+
 	leds {
 		led_work_en: led-work-en {
+			rockchip,pins = <3 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		led_sata_en: led-user-en {
+			rockchip,pins = <3 RK_PA7 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		led_net_en: led-net-en {
 			rockchip,pins = <3 RK_PA5 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
-		/* 删除其他LED引脚配置 */
 	};
 
 	vcc {
@@ -648,11 +648,15 @@
 		};
 	};
 
-	/* 删除SD卡引脚配置 */
+	sd {
+		vcc3v3_sd_en: vcc3v3-sd_en {
+			rockchip,pins = <0 RK_PA6 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
 
 	pcie {
-		vcc3v3_pcie_en: vcc3v3_pcie_en {
-			rockchip,pins = <0 RK_PC4 RK_FUNC_GPIO &pcfg_pull_none>;
+		vcc3v3_pcie2_en: vcc3v3_pcie2_en {
+			rockchip,pins = <3 RK_PD5 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 };
@@ -689,8 +693,18 @@
 };
 
 &sdmmc0 {
-	/* 您的设备可能没有SD卡槽，可以禁用 */
-	status = "disabled";
+	bus-width = <4>;
+	cd-gpios = <&gpio0 RK_PA4 GPIO_ACTIVE_LOW>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&sdmmc0_bus4 &sdmmc0_clk &sdmmc0_cmd &sdmmc0_det>;
+
+	cap-sd-highspeed;
+	max-frequency = <50000000>;
+	disable-wp;
+
+	vmmc-supply = <&vcc3v3_sd_pwren>;
+	vqmmc-supply = <&vccio_sd>;
+	status = "okay";
 };
 
 &tsadc {
@@ -707,7 +721,7 @@
 	status = "okay";
 };
 
-/* USB配置 - 根据Android设备树调整 */
+/* 根据安卓设备树，更新USB节点名称 */
 &usb_host0_ehci {
 	status = "okay";
 };
@@ -777,10 +791,7 @@
 	};
 };
 
-/* 
- * WiFi配置 - 根据Android设备树调整
- * Android设备树使用的是AP6275S WiFi芯片
- */
+/* 添加WiFi和蓝牙配置（根据安卓设备树） */
 &sdio_pwrseq {
 	compatible = "mmc-pwrseq-simple";
 	clocks = <&rk809 1>;
@@ -788,16 +799,16 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&wifi_enable_h>;
 	post-power-on-delay-ms = <100>;
-	reset-gpios = <&gpio3 RK_PD4 GPIO_ACTIVE_LOW>;
+	reset-gpios = <&gpio3 RK_PD1 GPIO_ACTIVE_LOW>;
 };
 
 &wireless_wlan {
 	compatible = "wlan-platdata";
 	rockchip,grf = <&grf>;
-	wifi_chip_type = "ap6275s";  // 您的WiFi芯片型号
+	wifi_chip_type = "ap6275s";
 	pinctrl-names = "default";
 	pinctrl-0 = <&wifi_host_wake_irq>;
-	WIFI,host_wake_irq = <&gpio3 RK_PD5 GPIO_ACTIVE_HIGH>;
+	WIFI,host_wake_irq = <&gpio3 RK_PC4 GPIO_ACTIVE_HIGH>;
 	status = "okay";
 };
 
@@ -805,81 +816,56 @@
 	compatible = "bluetooth-platdata";
 	clocks = <&rk809 1>;
 	clock-names = "ext_clock";
-	pinctrl-names = "default";
-	pinctrl-0 = <&uart8_gpios>;
 	uart_rts_gpios = <&gpio2 RK_PB1 GPIO_ACTIVE_LOW>;
+	pinctrl-names = "default", "rts_gpio";
+	pinctrl-0 = <&uart8m0_rtsn>;
+	pinctrl-1 = <&uart8_gpios>;
 	BT,reset_gpio = <&gpio3 RK_PA0 GPIO_ACTIVE_HIGH>;
 	BT,wake_gpio = <&gpio3 RK_PA2 GPIO_ACTIVE_HIGH>;
 	BT,wake_host_irq = <&gpio3 RK_PA1 GPIO_ACTIVE_HIGH>;
 	status = "okay";
 };
 
-/* 在pinctrl中添加WiFi和蓝牙的引脚配置 */
-&pinctrl {
-	wireless-wlan {
-		wifi_enable_h: wifi-enable-h {
-			rockchip,pins = <3 RK_PD4 RK_FUNC_GPIO &pcfg_pull_none>;
+/* 更新温控配置 */
+&cpu_thermal {
+	trips {
+		cpu_cool: cpu_cool {
+			temperature = <45000>;
+			hysteresis = <2000>;
+			type = "active";
 		};
 
+		cpu_warm: cpu_warm {
+			temperature = <55000>;
+			hysteresis = <2000>;
+			type = "active";
+		};
+
+		cpu_hot: cpu_hot {
+			temperature = <65000>;
+			hysteresis = <2000>;
+			type = "active";
+		};
+	};
+};
+
+/* 添加缺失的引脚定义 */
+&pinctrl {
+	sdio-pwrseq {
+		wifi_enable_h: wifi-enable-h {
+			rockchip,pins = <3 RK_PD1 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+
+	wireless-wlan {
 		wifi_host_wake_irq: wifi-host-wake-irq {
-			rockchip,pins = <3 RK_PD5 RK_FUNC_GPIO &pcfg_pull_none>;
+			rockchip,pins = <3 RK_PC4 RK_FUNC_GPIO &pcfg_pull_down>;
 		};
 	};
 
 	wireless-bluetooth {
 		uart8_gpios: uart8-gpios {
 			rockchip,pins = <2 RK_PB1 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-
-		bt_reset_gpio: bt-reset-gpio {
-			rockchip,pins = <3 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-
-		bt_wake_gpio: bt-wake-gpio {
-			rockchip,pins = <3 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-
-		bt_wake_host_irq: bt-wake-host-irq {
-			rockchip,pins = <3 RK_PA1 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-	};
-};
-
-/* 
- * 温控配置 - 根据Android设备树，您的设备有温度传感器
- * 但可能没有风扇，所以删除风扇相关的温控配置
- */
-&cpu_thermal {
-	polling-delay-passive = <100>;
-	polling-delay = <1000>;
-	thermal-sensors = <&tsadc 0>;
-
-	trips {
-		cpu_alert0: cpu_alert0 {
-			temperature = <70000>;
-			hysteresis = <2000>;
-			type = "passive";
-		};
-		cpu_alert1: cpu_alert1 {
-			temperature = <75000>;
-			hysteresis = <2000>;
-			type = "passive";
-		};
-		cpu_crit: cpu_crit {
-			temperature = <95000>;
-			hysteresis = <2000>;
-			type = "critical";
-		};
-	};
-
-	cooling-maps {
-		/* 如果没有风扇，可以删除冷却映射或使用其他冷却方式 */
-		map0 {
-			trip = <&cpu_alert0>;
-			cooling-device = <&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-					 <&cpu1 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-					 <&cpu2 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
-					 <&cpu3 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
 		};
 	};
 };
