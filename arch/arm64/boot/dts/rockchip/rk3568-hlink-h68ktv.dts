@@ -126,7 +126,7 @@
 };
 
 &cpu0 {
-    cpu-supply = <&vdd_cpu>;
+    cpu-supply = <&vdd_logic>;
 };
 
 &gmac0 {
@@ -164,6 +164,7 @@
 };
 
 &mdio0 {
+    status = "okay";
     rgmii_phy0: phy@0 {
         compatible = "ethernet-phy-ieee802.3-c22";
         reg = <0x0>;
@@ -171,6 +172,7 @@
 };
 
 &mdio1 {
+    status = "okay";
     rgmii_phy1: phy@0 {
         compatible = "ethernet-phy-ieee802.3-c22";
         reg = <0x0>;
