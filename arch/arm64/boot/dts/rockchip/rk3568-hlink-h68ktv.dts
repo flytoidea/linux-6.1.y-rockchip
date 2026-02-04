@@ -248,7 +248,7 @@
     status = "okay";
 	rgmii_phy0: ethernet-phy@1 {
 		compatible = "ethernet-phy-ieee802.3-c22";
-		reg = <1>;
+		reg = <0>;
 		phy-supply = <&vcc3v3_sys>;
 		realtek,led-data = <0xc160>;
 	};
@@ -271,18 +271,54 @@
 
 &hdmi {
     status = "okay";
+    pinctrl-names = "default";
+    pinctrl-0 = <&hdmitx_scl &hdmitx_sda &hdmitxm0_cec>;
+    
+    cec-enable;
+    cec-slow = <0>;
+    
+    ddc-i2c-scl-high-time-ns = <9625>;
+    ddc-i2c-scl-low-time-ns = <10000>;
+    
+ 
+    #sound-dai-cells = <0>;
+    rockchip,phy-table = 
+        <594000000  0x8009 0x0000 0x0270>,
+        <297000000  0x800b 0x0000 0x026d>,
+        <148500000  0x800b 0x0000 0x01ed>,
+        <74250000   0x800b 0x0000 0x01ad>,
+        <0          0x0000 0x0000 0x0000>;
 };
 
 &vop {
     status = "okay";
+    assigned-clocks = <&cru DCLK_VOP0>, <&cru DCLK_VOP1>;
+    assigned-clock-parents = <&pmucru PLL_HPLL>, <&cru PLL_VPLL>;
 };
 
 &hdmi_in_vp0 {
     status = "okay";
 };
 
-&hdmi_sound {
-	status = "okay";
+hdmi_sound: hdmi-sound {
+    status = "okay";
+    compatible = "rockchip,hdmi";
+    rockchip,mclk-fs = <128>;
+    rockchip,card-name = "rockchip-hdmi0";
+    rockchip,cpu = <&i2s0_8ch>;
+    rockchip,codec = <&hdmi>;
+    rockchip,jack-det;
+};
+
+&i2s0_8ch {
+    status = "okay";
+    #sound-dai-cells = <0>;
+    rockchip,playback-only;
+    rockchip,clk-trcm = <1>;
+    pinctrl-names = "default";
+    pinctrl-0 = <&i2s0_8ch_sdo0 &i2s0_8ch_sdo1 &i2s0_8ch_sdo2 &i2s0_8ch_sdo3
+                 &i2s0_8ch_sdi0 &i2s0_8ch_sdi1 &i2s0_8ch_sdi2 &i2s0_8ch_sdi3
+                 &i2s0_8ch_lrck &i2s0_8ch_sclk &i2s0_8ch_mclkout>;
 };
 
 &i2c0 {
@@ -608,6 +644,18 @@
 			rockchip,pins = <2 RK_PA1 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
+uart8 {
+        uart8m0_xfer: uart8m0-xfer {
+            rockchip,pins = <2 RK_PC1 2 &pcfg_pull_up>,
+                            <2 RK_PC0 2 &pcfg_pull_up>;
+        };
+        uart8m0_ctsn: uart8m0-ctsn {
+            rockchip,pins = <2 RK_PB7 2 &pcfg_pull_none>;
+        };
+        uart8m0_rtsn: uart8m0-rtsn {
+            rockchip,pins = <2 RK_PB6 2 &pcfg_pull_none>;
+        };
+    };
 
 	// SATA 电源控制器
 	sata {
@@ -647,6 +695,29 @@
 					<1 RK_PC5 RK_FUNC_2 &pcfg_pull_up>;
 		};
 	};
+
+&uart8 {
+    status = "okay";
+    dmas = <&dmac0 12>, <&dmac0 13>;
+    dma-names = "tx", "rx";
+    pinctrl-names = "default";
+    pinctrl-0 = <&uart8m0_xfer &uart8m0_ctsn &uart8m0_rtsn>;
+    
+ 
+    bluetooth {
+        compatible = "brcm,bcm4345c5";
+        max-speed = <1500000>;
+        clocks = <&rk809 1>;
+        clock-names = "lpo";
+        device-wakeup-gpios = <&gpio2 RK_PA2 GPIO_ACTIVE_HIGH>;
+        host-wakeup-gpios = <&gpio2 RK_PA3 GPIO_ACTIVE_HIGH>;
+        shutdown-gpios = <&gpio2 RK_PA1 GPIO_ACTIVE_HIGH>;
+        vbat-supply = <&vcc3v3_sys>;
+        vddio-supply = <&vcc3v3_sys>;
+    };
+};
+
+
 
 	// LED 指示灯
 	leds {
@@ -793,7 +864,7 @@
 };
 
 &pcie3x2 {
-	reset-gpios = <&gpio2 RK_PD6 GPIO_ACTIVE_HIGH>;
+	reset-gpios = <&gpio2 RK_PD6 GPIO_ACTIVE_LOW>;
 	vpcie3v3-supply = <&vcc3v3_pcie>;
 	num-lanes = <2>;
 	status = "okay";
@@ -801,16 +872,18 @@
 };
 
 &sdmmc2 {
-	max-frequency = <150000000>;
-	supports-sdio;
-	bus-width = <4>;
-	cap-sd-highspeed;
-	cap-sdio-irq;
-	keep-power-in-suspend;
-	mmc-pwrseq = <&sdio_pwrseq>;
-	non-removable;
-	pinctrl-names = "default";
-	pinctrl-0 = <&sdmmc2m0_bus4 &sdmmc2m0_cmd &sdmmc2m0_clk>;
-	sd-uhs-sdr104;
-	status = "okay";
+    max-frequency = <150000000>;
+    supports-sdio;
+    bus-width = <4>;
+    cap-sd-highspeed;
+    cap-sdio-irq;
+    keep-power-in-suspend;
+    mmc-pwrseq = <&sdio_pwrseq>;
+    non-removable;
+    pinctrl-names = "default";
+    pinctrl-0 = <&sdmmc2m0_bus4 &sdmmc2m0_cmd &sdmmc2m0_clk>;
+    sd-uhs-sdr104;
+    wakeup-source;
+    interrupts-extended = <&gpio3 RK_PD4 IRQ_TYPE_LEVEL_LOW>;  
+    status = "okay";
 };
