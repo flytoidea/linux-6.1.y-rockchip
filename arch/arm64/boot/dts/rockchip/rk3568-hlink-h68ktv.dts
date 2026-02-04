@@ -29,17 +29,6 @@
 		stdout-path = "serial2:1500000n8";
 	};
 
-	hdmi-con {
-		compatible = "hdmi-connector";
-		type = "a";
-
-		port {
-			hdmi_con_in: endpoint {
-				remote-endpoint = <&hdmi_out_con>;
-			};
-		};
-	};
-
 	/* RGB LED 配置 */
 	pwm-leds {
 		compatible = "pwm-leds";
@@ -128,7 +117,15 @@
 		regulator-max-microvolt = <5000000>;
 		vin-supply = <&vcc5v0_usb>;
 	};
-
+    vcc3v3_sys: vcc3v3-sys {
+        compatible = "regulator-fixed";
+        regulator-name = "vcc3v3_sys";
+        regulator-always-on;
+        regulator-boot-on;
+        regulator-min-microvolt = <3300000>;
+        regulator-max-microvolt = <3300000>;
+        vin-supply = <&vcc5v0_sys>;
+    };
 	vcc3v3_pcie: vcc3v3-pcie-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "vcc3v3_pcie";
@@ -269,17 +266,15 @@
 };
 
 &hdmi {
-	avdd-0v9-supply = <&vdda0v9_image>;
-	avdd-1v8-supply = <&vcca1v8_image>;
-	status = "okay";
+    status = "okay";
+};
+
+&vop {
+    status = "okay";
 };
 
 &hdmi_in_vp0 {
-	remote-endpoint = <&vp0_out_hdmi>;
-};
-
-&hdmi_out_con {
-	remote-endpoint = <&hdmi_con_in>;
+    status = "okay";
 };
 
 &hdmi_sound {
@@ -799,20 +794,4 @@
 	sd-uhs-sdr104;
 	status = "okay";
 };
-
-&vop {
-	assigned-clocks = <&cru DCLK_VOP0>, <&cru DCLK_VOP1>;
-	assigned-clock-parents = <&pmucru PLL_HPLL>, <&cru PLL_VPLL>;
-	status = "okay";
-};
-
-&vop_mmu {
-	status = "okay";
-};
-
-&vp0 {
-	vp0_out_hdmi: endpoint@ROCKCHIP_VOP2_EP_HDMI0 {
-		reg = <ROCKCHIP_VOP2_EP_HDMI0>;
-		remote-endpoint = <&hdmi_in_vp0>;
-	};
 };
