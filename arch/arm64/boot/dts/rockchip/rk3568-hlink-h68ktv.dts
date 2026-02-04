@@ -157,6 +157,20 @@
 		vin-supply = <&vcc3v3_sys>;
 	};
 
+    vcc_sata: sata-pwr-regulator {
+        compatible = "regulator-fixed";
+        regulator-name = "vcc_sata";
+        enable-active-high;
+        gpio = <&gpio0 RK_PA1 GPIO_ACTIVE_HIGH>;
+        pinctrl-names = "default";
+        pinctrl-0 = <&sata_pwr>;
+        regulator-always-on;
+        regulator-boot-on;
+        regulator-min-microvolt = <12000000>;
+        regulator-max-microvolt = <12000000>;
+        vin-supply = <&dc_12v>;
+    };
+
 	sdio_pwrseq: sdio-pwrseq {
 		compatible = "mmc-pwrseq-simple";
 		clocks = <&rk809 1>;
@@ -688,6 +702,7 @@
 
 &sata2 {
 	status = "okay";
+    target-supply = <&vcc_sata>;
 };
 
 &usb2phy0 {
@@ -768,6 +783,7 @@
 	vpcie3v3-supply = <&vcc3v3_pcie>;
 	num-lanes = <2>;
 	status = "okay";
+    reset-delays-us = <0 100000 100000>;
 };
 
 &sdmmc2 {
