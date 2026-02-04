@@ -11,8 +11,8 @@
 #include "rk3568.dtsi"
 
 / {
-	model = "Hlink H68K";
-	compatible = "hlink,h68k", "rockchip,rk3568";
+	model = "Hlink H68KTV";
+	compatible = "hlink,h68ktv", "rockchip,rk3568";
 
 	aliases {
 		ethernet0 = &gmac0;
@@ -39,6 +39,20 @@
 			};
 		};
 	};
+
+    /* RGB LED 配置 */
+    pwm-leds {
+        compatible = "pwm-leds";
+    
+        rgb {
+            label = "rgb";
+            pwms = <&pwm8 0 12500000 0>;  // 周期 12.5ms (80Hz)，占空比 0-100%
+            max-brightness = <255>;       // 最大亮度值
+            linux,default-trigger = "default-on";  // 默认亮起
+            color = <LED_COLOR_ID_RGB>;   // RGB 多色 LED
+            function = LED_FUNCTION_INDICATOR;
+        };
+    };
 
 	keys {
 		compatible = "gpio-keys";
@@ -80,7 +94,7 @@
 		enable-active-high;
 		gpio = <&gpio0 RK_PA6 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
-		pinctrl-0 = <&vcc5v0_usb_en>;
+		pinctrl-0 = <&vcc5v0_host_en0>;
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
 		vin-supply = <&dc_12v>;
@@ -92,7 +106,7 @@
 		enable-active-high;
 		gpio = <&gpio0 RK_PA5 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
-		pinctrl-0 = <&vcc5v0_host_en>;
+		pinctrl-0 = <&vcc5v0_host_en1>;
 		regulator-always-on;
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
@@ -147,6 +161,10 @@
 		reset-gpios = <&gpio3 RK_PD5 GPIO_ACTIVE_LOW>;
 		post-power-on-delay-ms = <100>;
 	};
+};
+
+&pwm8 {
+	status = "okay";
 };
 
 &cpu0 {
@@ -237,19 +255,7 @@
 	};
 };
 
-/* RGB LED 配置 */
-pwm-leds {
-    compatible = "pwm-leds";
-    
-    rgb {
-        label = "rgb";
-        pwms = <&pwm8 0 12500000 0>;  // 周期 12.5ms (80Hz)，占空比 0-100%
-        max-brightness = <255>;       // 最大亮度值
-        linux,default-trigger = "default-on";  // 默认亮起
-        color = <LED_COLOR_ID_RGB>;   // RGB 多色 LED
-        function = LED_FUNCTION_INDICATOR;
-    };
-};
+
 
 &gpu {
 	mali-supply = <&vdd_gpu>;
