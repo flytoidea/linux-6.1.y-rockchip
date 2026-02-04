@@ -564,6 +564,20 @@
 		};
 	};
 
+     hdmi {
+        hdmitxm0_cec: hdmitxm0-cec {
+            rockchip,pins = <4 RK_PC1 RK_FUNC_1 &pcfg_pull_none>;
+        };
+        
+        hdmitx_scl: hdmitx-scl {
+            rockchip,pins = <4 RK_PB1 RK_FUNC_1 &pcfg_pull_none>;
+        };
+        
+        hdmitx_sda: hdmitx-sda {
+            rockchip,pins = <4 RK_PB2 RK_FUNC_1 &pcfg_pull_none>;
+        };
+    };
+
 	// USB 电源使能
 	usb {
 		vcc5v0_host_en0: vcc5v0-host-en0 {
