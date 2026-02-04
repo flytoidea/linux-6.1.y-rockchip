@@ -20,9 +20,9 @@
 		mmc1 = &sdhci;
 
 		led-boot = &power_led;
-        led-failsafe = &power_led;
-        led-running = &power_led;
-        led-upgrade = &power_led;
+		led-failsafe = &power_led;
+		led-running = &power_led;
+		led-upgrade = &power_led;
 	};
 
 	chosen: chosen {
@@ -40,26 +40,27 @@
 		};
 	};
 
-    /* RGB LED 配置 */
-    pwm-leds {
-        compatible = "pwm-leds";
-         rgb {
-            label = "rgb";
-            pwms = <&pwm8 0 12500000 0>; /* 周期 12.5ms (80Hz)，占空比 0-100% */
-            max-brightness = <255>;
-            linux,default-trigger = "default-on";
-        };
-    };
-    leds {
-        compatible = "gpio-leds";
-    
-        power_led: power {
-            label = "power";
-            gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_LOW>;
-            linux,default-trigger = "heartbeat";
-            retain-state-suspended;
-        };
-    };
+	/* RGB LED 配置 */
+	pwm-leds {
+		compatible = "pwm-leds";
+		rgb {
+			label = "rgb";
+			pwms = <&pwm8 0 12500000 0>; /* 周期 12.5ms (80Hz)，占空比 0-100% */
+			max-brightness = <255>;
+			linux,default-trigger = "default-on";
+		};
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		power_led: power {
+			label = "power";
+			gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_LOW>;
+			linux,default-trigger = "heartbeat";
+			retain-state-suspended;
+		};
+	};
 
 	keys {
 		compatible = "gpio-keys";
@@ -262,29 +263,27 @@
 	};
 };
 
-
-
 &gpu {
 	mali-supply = <&vdd_gpu>;
 	status = "okay";
 };
 
 &hdmi {
-    avdd-0v9-supply = <&vdda0v9_image>;
-    avdd-1v8-supply = <&vcca1v8_image>;
-    status = "okay";
+	avdd-0v9-supply = <&vdda0v9_image>;
+	avdd-1v8-supply = <&vcca1v8_image>;
+	status = "okay";
 };
 
 &hdmi_in_vp0 {
-    remote-endpoint = <&vp0_out_hdmi>;
+	remote-endpoint = <&vp0_out_hdmi>;
 };
 
 &hdmi_out_con {
-    remote-endpoint = <&hdmi_con_in>;
+	remote-endpoint = <&hdmi_con_in>;
 };
 
 &hdmi_sound {
-    status = "okay";
+	status = "okay";
 };
 
 &i2c0 {
@@ -546,107 +545,103 @@
 	};
 };
 
-
 &pinctrl {
-    // 复位按钮 (GPIO0_A0)
-    buttons {
-        reset_button_pin: reset-button-pin {
-            rockchip,pins = <0 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>;
-        };
-    };
+	// 复位按钮 (GPIO0_A0)
+	buttons {
+		reset_button_pin: reset-button-pin {
+			rockchip,pins = <0 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
 
-    // PMIC 相关 
-    pmic {
-        pmic_int: pmic-int {
-            rockchip,pins = <0 RK_PA3 RK_FUNC_GPIO &pcfg_pull_up>;
-        };
-        
-        // PMIC 的 MCLK 时钟引脚（I2S1_MCLK）
-        i2s1m0_mclk: i2s1m0-mclk {
-            rockchip,pins = <1 RK_PA2 RK_FUNC_1 &pcfg_pull_none>;
-        };
-    };
+	// PMIC 相关 
+	pmic {
+		pmic_int: pmic-int {
+			rockchip,pins = <0 RK_PA3 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
 
-    // USB 电源使能
-    usb {
-        vcc5v0_host_en0: vcc5v0-host-en0 {
-            rockchip,pins = <0 RK_PA6 RK_FUNC_GPIO &pcfg_pull_none>;
-        };
-        
-        vcc5v0_host_en1: vcc5v0-host-en1 {
-            rockchip,pins = <0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_none>;
-        };
-    };
+		// PMIC 的 MCLK 时钟引脚（I2S1_MCLK）
+		i2s1m0_mclk: i2s1m0-mclk {
+			rockchip,pins = <1 RK_PA2 RK_FUNC_1 &pcfg_pull_none>;
+		};
+	};
 
-    // WiFi (SDIO) 相关
-    sdio-pwrseq {
-        wifi_enable_h: wifi-enable-h {
-            rockchip,pins = <3 RK_PD5 RK_FUNC_GPIO &pcfg_pull_none>;
-        };
-    };
+	// USB 电源使能
+	usb {
+		vcc5v0_host_en0: vcc5v0-host-en0 {
+			rockchip,pins = <0 RK_PA6 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
 
-    wireless-wlan {
-        wifi_host_wake_irq: wifi-host-wake-irq {
-            rockchip,pins = <3 RK_PD4 RK_FUNC_GPIO &pcfg_pull_down>;
-        };
-    };
+		vcc5v0_host_en1: vcc5v0-host-en1 {
+			rockchip,pins = <0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
 
-    // 蓝牙 (UART8)
-    wireless-bluetooth {
-        uart8_gpios: uart8-gpios {
-            rockchip,pins = <2 RK_PA1 RK_FUNC_GPIO &pcfg_pull_none>;
-        };
-    };
+	// WiFi (SDIO) 相关
+	sdio-pwrseq {
+		wifi_enable_h: wifi-enable-h {
+			rockchip,pins = <3 RK_PD5 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
 
-    // SATA 电源控制器
-    sata {
-        sata_pwr: sata-pwr {
-            rockchip,pins = <0 RK_PA1 RK_FUNC_GPIO &pcfg_pull_none>;
-        };
-    };
+	wireless-wlan {
+		wifi_host_wake_irq: wifi-host-wake-irq {
+			rockchip,pins = <3 RK_PD4 RK_FUNC_GPIO &pcfg_pull_down>;
+		};
+	};
 
-    // PCIe 相关
-    pcie {
-        pcie_pwr: pcie-pwr {
-            rockchip,pins = <2 RK_PC2 RK_FUNC_GPIO &pcfg_pull_none>;
-        };
-        
-        pcie_reset: pcie-reset {
-            rockchip,pins = <2 RK_PD6 RK_FUNC_GPIO &pcfg_pull_none>;
-        };
-    };
+	// 蓝牙 (UART8)
+	wireless-bluetooth {
+		uart8_gpios: uart8-gpios {
+			rockchip,pins = <2 RK_PA1 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
 
-    // 以太网 PHY 复位
-    gmac0 {
-        gmac0_reset: gmac0-reset {
-            rockchip,pins = <2 RK_PD3 RK_FUNC_GPIO &pcfg_pull_none>;
-        };
-    };
+	// SATA 电源控制器
+	sata {
+		sata_pwr: sata-pwr {
+			rockchip,pins = <0 RK_PA1 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
 
-    gmac1 {
-        gmac1_reset: gmac1-reset {
-            rockchip,pins = <1 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
-        };
-    };
+	// PCIe 相关
+	pcie {
+		pcie_pwr: pcie-pwr {
+			rockchip,pins = <2 RK_PC2 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
 
-    // 串口调试
-    uart2 {
-        uart2m0_xfer: uart2m0-xfer {
-            rockchip,pins = <1 RK_PC4 RK_FUNC_2 &pcfg_pull_up>,
-                            <1 RK_PC5 RK_FUNC_2 &pcfg_pull_up>;
-        };
-    };
+		pcie_reset: pcie-reset {
+			rockchip,pins = <2 RK_PD6 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
 
-    // LED 指示灯
-     leds {
-      led_power_pin: led-power-pin {
-        rockchip,pins = <3 RK_PC5 RK_FUNC_GPIO &pcfg_pull_none>;
-         };
-     };
+	// 以太网 PHY 复位
+	gmac0 {
+		gmac0_reset: gmac0-reset {
+			rockchip,pins = <2 RK_PD3 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
 
+	gmac1 {
+		gmac1_reset: gmac1-reset {
+			rockchip,pins = <1 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+
+	// 串口调试
+	uart2 {
+		uart2m0_xfer: uart2m0-xfer {
+			rockchip,pins = <1 RK_PC4 RK_FUNC_2 &pcfg_pull_up>,
+					<1 RK_PC5 RK_FUNC_2 &pcfg_pull_up>;
+		};
+	};
+
+	// LED 指示灯
+	leds {
+		led_power_pin: led-power-pin {
+			rockchip,pins = <3 RK_PC5 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
 };
-
-
 
 &pmu_io_domains {
 	pmuio1-supply = <&vcc3v3_pmu>;
