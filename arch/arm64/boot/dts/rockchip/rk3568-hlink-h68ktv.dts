@@ -633,21 +633,6 @@
         };
     };
 
-    // 显示相关
-    hdmi {
-        hdmitxm0_cec: hdmitxm0-cec {
-            rockchip,pins = <4 RK_PC1 RK_FUNC_1 &pcfg_pull_none>;
-        };
-        
-        hdmitx_scl: hdmitx-scl {
-            rockchip,pins = <4 RK_PB3 RK_FUNC_1 &pcfg_pull_none>;
-        };
-        
-        hdmitx_sda: hdmitx-sda {
-            rockchip,pins = <4 RK_PB4 RK_FUNC_1 &pcfg_pull_none>;
-        };
-    };
-
     // 串口调试
     uart2 {
         uart2m0_xfer: uart2m0-xfer {
