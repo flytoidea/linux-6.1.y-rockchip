@@ -270,25 +270,21 @@
 };
 
 &hdmi {
-	avdd-0v9-supply = <&vdda0v9_image>;
-	avdd-1v8-supply = <&vcca1v8_image>;
-	status = "okay";
+    avdd-0v9-supply = <&vdda0v9_image>;
+    avdd-1v8-supply = <&vcca1v8_image>;
+    status = "okay";
 };
 
-&hdmi_in {
-	hdmi_in_vp0: endpoint {
-		remote-endpoint = <&vp0_out_hdmi>;
-	};
+&hdmi_in_vp0 {
+    remote-endpoint = <&vp0_out_hdmi>;
 };
 
-&hdmi_out {
-	hdmi_out_con: endpoint {
-		remote-endpoint = <&hdmi_con_in>;
-	};
+&hdmi_out_con {
+    remote-endpoint = <&hdmi_con_in>;
 };
 
 &hdmi_sound {
-	status = "okay";
+    status = "okay";
 };
 
 &i2c0 {
