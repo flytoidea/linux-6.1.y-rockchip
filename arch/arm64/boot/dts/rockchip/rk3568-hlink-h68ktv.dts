@@ -43,14 +43,11 @@
     /* RGB LED 配置 */
     pwm-leds {
         compatible = "pwm-leds";
-    
-        rgb {
+         rgb {
             label = "rgb";
-            pwms = <&pwm8 0 12500000 0>;  // 周期 12.5ms (80Hz)，占空比 0-100%
-            max-brightness = <255>;       // 最大亮度值
-            linux,default-trigger = "default-on";  // 默认亮起
-            color = <LED_COLOR_ID_RGB>;   // RGB 多色 LED
-            function = LED_FUNCTION_INDICATOR;
+            pwms = <&pwm8 0 12500000 0>; /* 周期 12.5ms (80Hz)，占空比 0-100% */
+            max-brightness = <255>;
+            linux,default-trigger = "default-on";
         };
     };
     leds {
