@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+// Copyright (c) 2022 AmadeusGhost <amadeus@jmu.edu.cn>
+
 /dts-v1/;
 
 #include <dt-bindings/gpio/gpio.h>
@@ -41,8 +44,10 @@
 		compatible = "pwm-leds";
 		rgb {
 			label = "rgb";
-			pwms = <&pwm8 0 12500000 0>; /* 周期 12.5ms (80Hz)，占空比 0-100% */
+			pwms = <&pwm8 0 12500000 0>;
 			max-brightness = <255>;
+			brightness-levels = <0 255>;
+			pwm-active-state = <1>;
 			linux,default-trigger = "default-on";
 		};
 	};
@@ -267,7 +272,7 @@
 	status = "okay";
 	rgmii_phy1: ethernet-phy@1 {
 		compatible = "ethernet-phy-ieee802.3-c22";
-		reg = <1>;
+		reg = <0>;
 		phy-supply = <&vcc3v3_sys>;
 		realtek,led-data = <0xc160>;
 	};
@@ -298,8 +303,9 @@
 		<0          0x0000 0x0000 0x0000>;
 
 	port {
-		hdmi_in: endpoint {
-			remote-endpoint = <&hdmi_in_vp0>;
+		hdmi_in_vp0: endpoint@0 {
+			reg = <0>;
+			remote-endpoint = <&vop_out_hdmi>;
 		};
 	};
 };
@@ -313,7 +319,7 @@
 		vop_out: port@0 {
 			reg = <0>;
 			vop_out_hdmi: endpoint {
-				remote-endpoint = <&hdmi_in>;
+				remote-endpoint = <&hdmi_in_vp0>;
 			};
 		};
 	};
@@ -333,6 +339,7 @@
 		     &i2s0_8ch_sdi0 &i2s0_8ch_sdi1 &i2s0_8ch_sdi2 &i2s0_8ch_sdi3
 		     &i2s0_8ch_lrck &i2s0_8ch_sclk &i2s0_8ch_mclkout>;
 	assigned-clocks = <&cru I2S0_MCLK>;
+	assigned-clock-parents = <&cru PLL_AUPLL>;
 	assigned-clock-rates = <12288000>;
 };
 
@@ -591,10 +598,10 @@
 					regulator-off-in-suspend;
 				};
 			};
+			
 		};
 	};
 };
-
 &pinctrl {
 	/* 复位按钮 (GPIO0_A0) */
 	buttons {
@@ -615,7 +622,7 @@
 		};
 	};
 
-  hdmi {
+	hdmi {
         hdmitxm0_cec: hdmitxm0-cec {
             rockchip,pins = <4 RK_PC1 RK_FUNC_1 &pcfg_pull_none>;
         };
@@ -628,7 +635,6 @@
             rockchip,pins = <4 RK_PB2 RK_FUNC_1 &pcfg_pull_none>;
         };
     };
-
 
 	/* USB 电源使能 */
 	usb {
@@ -778,29 +784,21 @@
 
 /* 用于蓝牙 */
 &uart8 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&uart8m0_xfer &uart8m0_ctsn &uart8m0_rtsn &uart8_bt_ctrl>;
-	status = "okay";
-	dmas = <&dmac0 12>, <&dmac0 13>;
-	dma-names = "tx", "rx";
-
-	bluetooth {
-		compatible = "brcm,bcm4345c5";
-		max-speed = <1500000>;
-		clocks = <&rk809 1>;
-		clock-names = "lpo";
-		device-wakeup-gpios = <&gpio2 RK_PA2 GPIO_ACTIVE_HIGH>;
-		host-wakeup-gpios = <&gpio2 RK_PA3 GPIO_ACTIVE_HIGH>;
-		shutdown-gpios = <&gpio2 RK_PA1 GPIO_ACTIVE_HIGH>;
-		vbat-supply = <&vcc3v3_sys>;
-		vddio-supply = <&vcc3v3_sys>;
-	};
+    pinctrl-names = "default";
+    pinctrl-0 = <&uart8m0_xfer &uart8m0_ctsn &uart8m0_rtsn>;
+    status = "okay";
+    dmas = <&dmac0 12>, <&dmac0 13>;
+    dma-names = "tx", "rx";
 };
 
 &sata2 {
-	status = "okay";
-	target-supply = <&vcc_sata>;
-	vccio-supply = <&vcc_1v8>;
+    status = "okay";
+    phy-supply = <&vcc_sata>;  
+    vccio-supply = <&vcc_1v8>;  
+    phys = <&combphy2_psq 2>; 
+    phy-names = "sata-phy";
+    clocks = <&cru CLK_SATA2_M0>;  
+    clock-names = "sata";
 };
 
 &usb2phy0 {
@@ -877,8 +875,10 @@
 };
 
 &pcie3x2 {
-	reset-gpios = <&gpio2 RK_PD6 GPIO_ACTIVE_LOW>;
+	reset-gpios = <&gpio2 RK_PD6 GPIO_ACTIVE_HIGH>;
 	vpcie3v3-supply = <&vcc3v3_pcie>;
+	vpcie0v9-supply = <&pcie30_avdd0v9>;
+	vpcie1v8-supply = <&pcie30_avdd1v8>;
 	num-lanes = <2>;
 	status = "okay";
 	reset-delays-us = <0 100000 100000>;
@@ -898,6 +898,6 @@
 	sd-uhs-sdr104;
 	wakeup-source;
 	interrupts-extended = <&gpio3 RK_PD4 IRQ_TYPE_EDGE_RISING>;
+	vqmmc-supply = <&vccio_sd>;
 	status = "okay";
 };
-
