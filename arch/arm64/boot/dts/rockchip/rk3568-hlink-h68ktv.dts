@@ -19,10 +19,10 @@
 		ethernet1 = &gmac1;
 		mmc1 = &sdhci;
 
-		led-boot = &led_work;
-		led-failsafe = &led_work;
-		led-running = &led_work;
-		led-upgrade = &led_work;
+		led-boot = &power_led;
+        led-failsafe = &power_led;
+        led-running = &power_led;
+        led-upgrade = &power_led;
 	};
 
 	chosen: chosen {
@@ -51,6 +51,16 @@
             linux,default-trigger = "default-on";  // 默认亮起
             color = <LED_COLOR_ID_RGB>;   // RGB 多色 LED
             function = LED_FUNCTION_INDICATOR;
+        };
+    };
+    leds {
+        compatible = "gpio-leds";
+    
+        power_led: power {
+            label = "power";
+            gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_LOW>;
+            linux,default-trigger = "heartbeat";
+            retain-state-suspended;
         };
     };
 
@@ -650,17 +660,13 @@
     };
 
     // LED 指示灯
-    leds {
-        led_power_pin: led-power-pin {
-            rockchip,pins = <3 RK_PC1 RK_FUNC_GPIO &pcfg_pull_none>;
-        };
-        
-        led_work_pin: led-work-pin {
-            rockchip,pins = <3 RK_PC9 RK_FUNC_GPIO &pcfg_pull_none>;
-        };
-    };
-};
+     leds {
+      led_power_pin: led-power-pin {
+        rockchip,pins = <3 RK_PC5 RK_FUNC_GPIO &pcfg_pull_none>;
+         };
+     };
 
+};
 
 
 
