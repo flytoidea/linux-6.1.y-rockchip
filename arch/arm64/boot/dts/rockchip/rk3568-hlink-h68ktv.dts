@@ -231,31 +231,21 @@
 };
 
 &mdio0 {
+    status = "okay";
 	rgmii_phy0: ethernet-phy@1 {
 		compatible = "ethernet-phy-ieee802.3-c22";
 		reg = <1>;
 		phy-supply = <&vcc3v3_sys>;
-
-		/*
-		 * RTL8211F Custom LED Mode B
-		 * LED1 (Green):  Link 10/100/1000
-		 * LED2 (Yellow): Active 10/100/1000
-		 */
 		realtek,led-data = <0xc160>;
 	};
 };
 
 &mdio1 {
+    status = "okay";
 	rgmii_phy1: ethernet-phy@1 {
 		compatible = "ethernet-phy-ieee802.3-c22";
 		reg = <1>;
 		phy-supply = <&vcc3v3_sys>;
-
-		/*
-		 * RTL8211F Custom LED Mode B
-		 * LED1 (Green):  Link 10/100/1000
-		 * LED2 (Yellow): Active 10/100/1000
-		 */
 		realtek,led-data = <0xc160>;
 	};
 };
@@ -793,5 +783,4 @@
 	pinctrl-0 = <&sdmmc2m0_bus4 &sdmmc2m0_cmd &sdmmc2m0_clk>;
 	sd-uhs-sdr104;
 	status = "okay";
-};
 };
