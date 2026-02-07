@@ -604,13 +604,6 @@
     status = "okay";
 };
 
-&i2s1_8ch {
-    status = "okay";
-    rockchip,clk-trcm = <1>;
-    pinctrl-names = "default";
-    pinctrl-0 = <&i2s1m0_sclktx &i2s1m0_lrcktx &i2s1m0_sdi0 &i2s1m0_sdo0>;
-};
-
 /* ARM通用中断控制器 */
 &gic {
     status = "okay";
@@ -623,11 +616,6 @@
 
 /* 电源管理单元时钟控制器 */
 &pmucru {
-    status = "okay";
-};
-
-/* 快速中断请求调试器 */
-&fiq-debugger {
     status = "okay";
 };
 
