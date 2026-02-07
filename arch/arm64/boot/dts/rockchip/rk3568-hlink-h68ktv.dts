@@ -608,7 +608,7 @@
     status = "okay";
     rockchip,clk-trcm = <1>;
     pinctrl-names = "default";
-    pinctrl-0 = <&i2s1m0_sclktx&i2s1m0_lrcktx&i2s1m0_sdi0&i2s1m0_sdo0>;
+    pinctrl-0 = <&i2s1m0_sclktx &i2s1m0_lrcktx &i2s1m0_sdi0 &i2s1m0_sdo0>;
 };
 
 /* ARM通用中断控制器 */
