@@ -40,7 +40,7 @@
         sata_led: led-sata {
             label = "sata";
             gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
-            linux,default-trigger = "ata1";
+            linux,default-trigger = "ata2";
             retain-state-suspended;
         };
     };
