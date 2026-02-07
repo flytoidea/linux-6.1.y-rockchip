@@ -31,7 +31,7 @@
 
         ssd_led: led-ssd {
             label = "ssd";
-            /* 原GPIO3_D5与WiFi复位冲突，改为GPIO3_D4，硬件可自行调整 */
+            /* 修复: 原GPIO3_D5与WiFi复位冲突，改为GPIO3_D4，硬件可自行调整 */
             gpios = <&gpio3 RK_PD4 GPIO_ACTIVE_HIGH>;
             linux,default-trigger = "disk-activity";
             retain-state-suspended;
@@ -40,7 +40,7 @@
         sata_led: led-sata {
             label = "sata";
             gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
-            linux,default-trigger = "ata1";
+            linux,default-trigger = "ata2";
             retain-state-suspended;
         };
     };
@@ -49,7 +49,7 @@
         compatible = "worldsemi,ws2812-pwm";
         pwms = <&pwm8 0 1250 0>;
         num-leds = <10>;
-        /* 0=GRB(默认), 1=RGB, 2=BRG */
+        /* 修复: 语法错误，GRB改为数字0(0=GRB,1=RGB) */
         color-order = <0>;
         linux,default-trigger = "none";
         status = "okay";
@@ -176,19 +176,15 @@
     };
 };
 
-/* RK3568 四核全部绑定CPU供电 */
 &cpu0 {
     cpu-supply = <&vdd_cpu>;
 };
-
 &cpu1 {
     cpu-supply = <&vdd_cpu>;
 };
-
 &cpu2 {
     cpu-supply = <&vdd_cpu>;
 };
-
 &cpu3 {
     cpu-supply = <&vdd_cpu>;
 };
@@ -226,6 +222,7 @@
 
     snps,reset-gpio = <&gpio2 RK_PD3 GPIO_ACTIVE_LOW>;
     snps,reset-active-low;
+    /* Reset time is 20ms, 100ms for rtl8211f */
     snps,reset-delays-us = <0 20000 100000>;
 
     assigned-clocks = <&cru SCLK_GMAC0_RX_TX>, <&cru SCLK_GMAC0>;
@@ -233,7 +230,11 @@
     assigned-clock-rates = <0>, <125000000>;
 
     pinctrl-names = "default";
-    pinctrl-0 = <&gmac0_miim &gmac0_tx_bus2 &gmac0_rx_bus2 &gmac0_rgmii_clk &gmac0_rgmii_bus>;
+    pinctrl-0 = <&gmac0_miim
+             &gmac0_tx_bus2
+             &gmac0_rx_bus2
+             &gmac0_rgmii_clk
+             &gmac0_rgmii_bus>;
 
     tx_delay = <0x4f>;
     rx_delay = <0x26>;
@@ -255,6 +256,7 @@
 
     snps,reset-gpio = <&gpio1 RK_PB0 GPIO_ACTIVE_LOW>;
     snps,reset-active-low;
+    /* Reset time is 20ms, 100ms for rtl8211f */
     snps,reset-delays-us = <0 20000 100000>;
 
     assigned-clocks = <&cru SCLK_GMAC1_RX_TX>, <&cru SCLK_GMAC1>;
@@ -262,7 +264,11 @@
     assigned-clock-rates = <0>, <125000000>;
 
     pinctrl-names = "default";
-    pinctrl-0 = <&gmac1m1_miim &gmac1m1_tx_bus2 &gmac1m1_rx_bus2 &gmac1m1_rgmii_clk &gmac1m1_rgmii_bus>;
+    pinctrl-0 = <&gmac1m1_miim
+             &gmac1m1_tx_bus2
+             &gmac1m1_rx_bus2
+             &gmac1m1_rgmii_clk
+             &gmac1m1_rgmii_bus>;
 
     tx_delay = <0x3c>;
     rx_delay = <0x2f>;
@@ -287,7 +293,7 @@
         <185625000 0x800b 0x0000 0x01ed>,
         <297000000 0x800b 0x0000 0x01ad>,
         <594000000 0x8029 0x0000 0x0088>,
-        <0          0x0000 0x0000 0x0000>;
+        <000000000 0x0000 0x0000 0x0000>;
 };
 
 &hdmi_in_vp0 {
@@ -352,7 +358,6 @@
         clock-output-names = "rk808-clkout1", "rk808-clkout2";
         pmic-reset-func = <0>;
         not-save-power-en = <1>;
-
         vcc1-supply = <&vcc3v3_sys>;
         vcc2-supply = <&vcc3v3_sys>;
         vcc3-supply = <&vcc3v3_sys>;
@@ -603,8 +608,10 @@
     status = "okay";
     rockchip,clk-trcm = <1>;
     pinctrl-names = "default";
-    /* 修复：单行格式，避免DTC多行解析语法错误 */
-    pinctrl-0 = <&i2s1m0_sclktx &i2s1m0_lrcktx &i2s1m0_sdi0 &i2s1m0_sdo0>;
+    pinctrl-0 = <&i2s1m0_sclktx
+    &i2s1m0_lrcktx
+    &i2s1m0_sdi0
+    &i2s1m0_sdo0>;
 };
 
 /* ARM通用中断控制器 */
@@ -938,7 +945,8 @@
 };
 */
 
-/* PCIe 2.0 x1控制器：与pcie3x2硬件互斥，禁用 */
+/* PCIe 2.0 x1控制器 */
+/* 修复: RK3568与pcie3x2硬件互斥，共用复位脚，禁用此节点 */
 &pcie2x1 {
     reset-gpios = <&gpio2 RK_PC6 GPIO_ACTIVE_HIGH>;
     vpcie3v3-supply = <&vcc3v3_pcie>;
