@@ -647,11 +647,6 @@
     status = "okay";
 };
 
-/* 看门狗定时器 */
-&watchdog {
-    status = "okay";
-};
-
 /* 一次性可编程存储器 */
 &otp {
     status = "okay";
@@ -951,11 +946,6 @@
     rockchip,init-delay-ms = <100>;
     reset-gpios = <&gpio2 RK_PC6 GPIO_ACTIVE_HIGH>;
     vpcie3v3-supply = <&vcc3v3_pcie>;
-    status = "okay";
-};
-
-/* 多媒体处理服务框架 */
-&mpp_srv {
     status = "okay";
 };
 
