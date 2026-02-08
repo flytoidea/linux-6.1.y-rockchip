@@ -949,11 +949,6 @@
     status = "okay";
 };
 
-/* 2D图形加速器 */
-&rga {
-    status = "okay";
-};
-
 /* 视频解码处理单元 */
 &vdpu {
     status = "okay";
