@@ -189,7 +189,7 @@
         vin-supply = <&dc_12v>;
     };
 
-    sdio_pwrseq {
+    sdio_pwrseq: sdio_pwrseq {
     compatible = "mmc-pwrseq-simple";
     clocks = <&rk809 1>;
     clock-names = "ext_clock";
