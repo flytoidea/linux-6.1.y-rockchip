@@ -80,8 +80,6 @@
     };
 };
 
-
-
     /* 电源/电压调节器定义 */
     dc_12v: dc-12v {
         compatible = "regulator-fixed";
