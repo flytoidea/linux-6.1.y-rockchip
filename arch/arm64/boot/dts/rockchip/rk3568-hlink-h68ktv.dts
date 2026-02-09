@@ -54,6 +54,33 @@
         linux,default-trigger = "none";
         status = "okay";
     };
+    
+    wireless-wlan {
+        compatible = "wlan-platdata";
+        rockchip,grf = <&grf>;
+        wifi_chip_type = "ap6275s";
+        pinctrl-names = "default";
+        pinctrl-0 = <&wifi_host_wake_irq>;
+        WIFI,host_wake_irq = <&gpio3 RK_PC4 GPIO_ACTIVE_HIGH>;
+        status = "okay";
+    };
+    
+    wireless-bluetooth {
+        compatible = "bluetooth-platdata";
+        clocks = <&rk809 1>;
+        clock-names = "ext_clock";
+        uart_rts_gpios = <&gpio2 RK_PA1 GPIO_ACTIVE_LOW>;
+        pinctrl-names = "default", "rts_gpio";
+        pinctrl-0 = <&uart8m0_rtsn>;
+        pinctrl-1 = <&uart8_gpios>;
+        BT,reset_gpio = <&gpio2 RK_PB3 GPIO_ACTIVE_HIGH>;
+        BT,wake_gpio = <&gpio2 RK_PB2 GPIO_ACTIVE_HIGH>;
+        BT,wake_host_irq = <&gpio2 RK_PB1 GPIO_ACTIVE_HIGH>;
+        status = "okay";
+    };
+};
+
+
 
     /* 电源/电压调节器定义 */
     dc_12v: dc-12v {
@@ -165,15 +192,15 @@
         vin-supply = <&dc_12v>;
     };
 
-    sdio_pwrseq: sdio-pwrseq {
-        compatible = "mmc-pwrseq-simple";
-        clocks = <&rk809 1>;
-        clock-names = "ext_clock";
-        pinctrl-names = "default";
-        pinctrl-0 = <&wifi_enable_h>;
-        reset-gpios = <&gpio3 RK_PD5 GPIO_ACTIVE_LOW>;
-        post-power-on-delay-ms = <100>;
-    };
+&sdio_pwrseq {
+    compatible = "mmc-pwrseq-simple";
+    clocks = <&rk809 1>;
+    clock-names = "ext_clock";
+    pinctrl-names = "default";
+    pinctrl-0 = <&wifi_enable_h>;
+    reset-gpios = <&gpio3 RK_PD5 GPIO_ACTIVE_LOW>;
+    post-power-on-delay-ms = <100>;
+    status = "okay";
 };
 
 &cpu0 {
@@ -718,6 +745,7 @@
     pinctrl-names = "default";
     pinctrl-0 = <&sdmmc2m0_bus4 &sdmmc2m0_cmd &sdmmc2m0_clk>;
     sd-uhs-sdr104;
+    max-frequency = <25000000>;
     status = "okay";
 };
 
@@ -779,6 +807,29 @@
     sdio-pwrseq {
         wifi_enable_h: wifi-enable-h {
             rockchip,pins = <3 RK_PD5 RK_FUNC_GPIO &pcfg_pull_none>;
+        };
+    };
+
+    /* WiFi 唤醒中断引脚 */
+    wireless-wlan {
+        wifi_host_wake_irq: wifi-host-wake-irq {
+            rockchip,pins = <3 RK_PC4 RK_FUNC_GPIO &pcfg_pull_down>;
+        };
+    };
+
+    /* 蓝牙引脚 */
+    wireless-bluetooth {
+        uart8_gpios: uart8-gpios {
+            rockchip,pins = <2 RK_PA1 RK_FUNC_GPIO &pcfg_pull_none>;
+        };
+        bt_reset: bt-reset {
+            rockchip,pins = <2 RK_PB3 RK_FUNC_GPIO &pcfg_pull_none>;
+        };
+        bt_wake: bt-wake {
+            rockchip,pins = <2 RK_PB2 RK_FUNC_GPIO &pcfg_pull_none>;
+        };
+        bt_wake_host: bt-wake-host {
+            rockchip,pins = <2 RK_PB1 RK_FUNC_GPIO &pcfg_pull_down>;
         };
     };
 };
@@ -857,6 +908,8 @@
     dr_mode = "otg";
     phys = <&u2phy0_otg>;
     phy-names = "usb2-phy";
+    extcon = <&usb2phy0>;
+    maximum-speed = "high-speed";
     status = "okay";
 };
 
@@ -870,6 +923,7 @@
     dr_mode = "host";
     phys = <&u2phy1_host>;
     phy-names = "usb2-phy";
+    maximum-speed = "high-speed";
     status = "okay";
 };
 
