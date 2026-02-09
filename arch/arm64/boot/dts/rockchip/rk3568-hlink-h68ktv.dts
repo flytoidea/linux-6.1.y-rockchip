@@ -78,7 +78,6 @@
         BT,wake_host_irq = <&gpio2 RK_PB1 GPIO_ACTIVE_HIGH>;
         status = "okay";
     };
-};
 
     /* 电源/电压调节器定义 */
     dc_12v: dc-12v {
