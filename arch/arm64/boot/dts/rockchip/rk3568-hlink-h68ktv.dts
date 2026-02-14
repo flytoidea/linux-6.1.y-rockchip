@@ -31,8 +31,7 @@
 
         ssd_led: led-ssd {
             label = "ssd";
-            /* 修复: 原GPIO3_D5与WiFi复位冲突，改为GPIO3_D4，硬件可自行调整 */
-            gpios = <&gpio3 RK_PD4 GPIO_ACTIVE_HIGH>;
+            gpios = <&gpio3 RK_PB1 GPIO_ACTIVE_HIGH>;
             linux,default-trigger = "disk-activity";
             retain-state-suspended;
         };
