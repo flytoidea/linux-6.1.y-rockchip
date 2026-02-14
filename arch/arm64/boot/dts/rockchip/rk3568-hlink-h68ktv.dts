@@ -31,14 +31,14 @@
 
         ssd_led: led-ssd {
             label = "ssd";
-            gpios = <&gpio3 RK_PB1 GPIO_ACTIVE_HIGH>;
+            gpios = <&gpio3 RK_PB7 GPIO_ACTIVE_HIGH>;
             linux,default-trigger = "disk-activity";
             retain-state-suspended;
         };
 
         sata_led: led-sata {
             label = "sata";
-            gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
+            gpios = <&gpio3 RK_PB1 GPIO_ACTIVE_HIGH>;
             linux,default-trigger = "ata2";
             retain-state-suspended;
         };
@@ -98,6 +98,16 @@
         vin-supply = <&dc_12v>;
     };
 
+    vcc3v3_sys: vcc3v3-sys {
+        compatible = "regulator-fixed";
+        regulator-name = "vcc3v3_sys";
+        regulator-always-on;
+        regulator-boot-on;
+        regulator-min-microvolt = <3300000>;
+        regulator-max-microvolt = <3300000>;
+        vin-supply = <&vcc5v0_sys>;
+    };
+
     vcc5v0_usb: vcc5v0-usb-regulator {
         compatible = "regulator-fixed";
         regulator-name = "vcc5v0_usb";
@@ -133,21 +143,11 @@
         vin-supply = <&vcc5v0_usb>;
     };
 
-    vcc3v3_sys: vcc3v3-sys {
-        compatible = "regulator-fixed";
-        regulator-name = "vcc3v3_sys";
-        regulator-always-on;
-        regulator-boot-on;
-        regulator-min-microvolt = <3300000>;
-        regulator-max-microvolt = <3300000>;
-        vin-supply = <&vcc5v0_sys>;
-    };
-
     vcc3v3_pcie: vcc3v3-pcie-regulator {
         compatible = "regulator-fixed";
         regulator-name = "vcc3v3_pcie";
         enable-active-high;
-        gpio = <&gpio2 RK_PC2 GPIO_ACTIVE_HIGH>;
+        gpio = <&gpio2 RK_PD2 GPIO_ACTIVE_HIGH>;
         startup-delay-us = <5000>;
         regulator-min-microvolt = <3300000>;
         regulator-max-microvolt = <3300000>;
@@ -178,7 +178,7 @@
         compatible = "regulator-fixed";
         regulator-name = "vcc_sata";
         enable-active-high;
-        gpio = <&gpio0 RK_PA1 GPIO_ACTIVE_HIGH>;
+        gpio = <&gpio0 RK_PB4 GPIO_ACTIVE_HIGH>;
         pinctrl-names = "default";
         pinctrl-0 = <&sata_pwr>;
         regulator-always-on;
@@ -754,26 +754,22 @@
         };
 
         soc_slppin_gpio: soc_slppin_gpio {
-            rockchip,pins = <0 RK_PA2 RK_FUNC_GPIO &pcfg_output_low>;
+            rockchip,pins = <0 RK_PA2 RK_FUNC_GPIO &pcfg-output-low-pull-down>;
         };
 
         soc_slppin_slp: soc_slppin_slp {
-            rockchip,pins = <0 RK_PA2 1 &pcfg_pull_none>;
-        };
-
-        soc_slppin_pwrdn: soc_slppin_pwrdn {
-            rockchip,pins = <0 RK_PA2 2 &pcfg_pull_none>;
+            rockchip,pins = <0 RK_PA2 RK_FUNC_1 &pcfg_pull_up>;
         };
 
         soc_slppin_rst: soc_slppin_rst {
-            rockchip,pins = <0 RK_PA2 3 &pcfg_pull_none>;
+            rockchip,pins = <0 RK_PA2 RK_FUNC_2 &pcfg_pull_none>;
         };
     };
 
     /* SATA电源引脚配置 */
     sata {
         sata_pwr: sata-pwr {
-            rockchip,pins = <0 RK_PA1 RK_FUNC_GPIO &pcfg_pull_none>;
+            rockchip,pins = <0 RK_PB4 RK_FUNC_GPIO &pcfg_pull_none>;
         };
     };
 
@@ -790,12 +786,8 @@
 
     /* pcie引脚配置 */
     pcie {
-        pcie_pwr: pcie-pwr {
-            rockchip,pins = <2 RK_PC2 RK_FUNC_GPIO &pcfg_pull_none>;
-        };
-
         pcie_reset: pcie-reset {
-            rockchip,pins = <2 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>;
+            rockchip,pins = <2 RK_PD6 RK_FUNC_GPIO &pcfg_pull_none>;
         };
     };
 
@@ -816,16 +808,16 @@
     /* 蓝牙引脚 */
     wireless-bluetooth {
         uart8_gpios: uart8-gpios {
-            rockchip,pins = <2 RK_PB1 RK_FUNC_GPIO &pcfg_pull_none>; /* GPIO2_B1 */
+            rockchip,pins = <2 RK_PB1 RK_FUNC_GPIO &pcfg_pull_none>;
         };
         bt_reset: bt-reset {
-            rockchip,pins = <4 RK_PB4 RK_FUNC_GPIO &pcfg_pull_none>; /* GPIO4_B4 */
+            rockchip,pins = <4 RK_PB4 RK_FUNC_GPIO &pcfg_pull_none>;
         };
         bt_wake: bt-wake {
-            rockchip,pins = <4 RK_PB2 RK_FUNC_GPIO &pcfg_pull_none>; /* GPIO4_B2 */
+            rockchip,pins = <4 RK_PB2 RK_FUNC_GPIO &pcfg_pull_none>;
         };
         bt_wake_host: bt-wake-host {
-            rockchip,pins = <4 RK_PB5 RK_FUNC_GPIO &pcfg_pull_down>; /* GPIO4_B5 */
+            rockchip,pins = <4 RK_PB5 RK_FUNC_GPIO &pcfg_pull_none>;
         };
     };
 };
@@ -980,19 +972,11 @@
 };
 */
 
-/* PCIe 2.0 x1控制器 */
-/* 修复: RK3568与pcie3x2硬件互斥，共用复位脚，禁用此节点 */
-&pcie2x1 {
-    reset-gpios = <&gpio2 RK_PC6 GPIO_ACTIVE_HIGH>;
-    vpcie3v3-supply = <&vcc3v3_pcie>;
-    status = "disabled";
-};
-
 /* PCIe 3.0 x2控制器 */
 &pcie3x2 {
     num-lanes = <2>;
     rockchip,init-delay-ms = <100>;
-    reset-gpios = <&gpio2 RK_PC6 GPIO_ACTIVE_HIGH>;
+    reset-gpios = <&gpio2 RK_PD6 GPIO_ACTIVE_HIGH>;
     vpcie3v3-supply = <&vcc3v3_pcie>;
     status = "okay";
 };
