@@ -754,7 +754,7 @@
         };
 
         soc_slppin_gpio: soc_slppin_gpio {
-            rockchip,pins = <0 RK_PA2 RK_FUNC_GPIO &pcfg-output-low-pull-down>;
+            rockchip,pins = <0 RK_PA2 RK_FUNC_GPIO &pcfg_output_low>;
         };
 
         soc_slppin_slp: soc_slppin_slp {
