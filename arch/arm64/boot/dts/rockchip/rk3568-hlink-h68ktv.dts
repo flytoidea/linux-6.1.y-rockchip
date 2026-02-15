@@ -800,6 +800,7 @@
         wifi_enable_h: wifi-enable-h {
             rockchip,pins = <3 RK_PD5 RK_FUNC_GPIO &pcfg_pull_none>;
         };
+    };
 };
 
 /* PMU（电源管理单元）IO域配置 */
