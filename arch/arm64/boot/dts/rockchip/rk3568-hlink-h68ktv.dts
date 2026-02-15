@@ -725,7 +725,7 @@
     cap-sdio-irq;
     keep-power-in-suspend;
     non-removable;
-    mmc-pwrseq = <&sdio_pwrseq>;
+/*     mmc-pwrseq = <&sdio_pwrseq>; */
     vqmmc-supply = <&vcc_1v8>;
     vmmc-supply = <&vcc3v3_sys>;
     #address-cells = <1>;
