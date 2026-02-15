@@ -640,16 +640,13 @@
     uart-has-rtscts;
     
     bluetooth {
-        compatible = "brcm,bcm4345c5";
+        compatible = "brcm,bcm4375-bt", "brcm,bcm-bt";
         clocks = <&rk809 1>;
         clock-names = "lpo";
         vbat-supply = <&vcc_3v3>;
         vddio-supply = <&vcc_1v8>;
-        
-        device-wake-gpios = <&gpio4 RK_PB2 GPIO_ACTIVE_HIGH>;
-        host-wake-gpios = <&gpio4 RK_PB5 GPIO_ACTIVE_HIGH>;
-        shutdown-gpios = <&gpio4 RK_PB4 GPIO_ACTIVE_HIGH>;
-        
+        pinctrl-names = "default";
+/*        pinctrl-0 = <&bt_reset &bt_wake &bt_wake_host>; */
         max-speed = <3000000>;
     };
 };
@@ -734,11 +731,11 @@
     #address-cells = <1>;
     #size-cells = <0>;
     
-    brcmf: bcrmf@1 {
+    wifi: wifi@1 {
         reg = <1>;
-        compatible = "brcm,bcm4329-fmac";
-        interrupts = <&gpio3 RK_PD4 IRQ_TYPE_LEVEL_HIGH>;
+        compatible = "brcm,bcm4375-fmac";
         interrupt-parent = <&gpio3>;
+        interrupts = <RK_PD4 IRQ_TYPE_LEVEL_HIGH>;
         interrupt-names = "host-wake";
         pinctrl-names = "default";
         pinctrl-0 = <&wifi_host_wake_irq>;
@@ -794,6 +791,18 @@
     /* wifi引脚配置 */
     wifi_host_wake_irq: wifi-host-wake-irq {
             rockchip,pins = <3 RK_PD4 RK_FUNC_GPIO &pcfg_pull_up>;
+    };
+
+    wireless-bluetooth {
+        bt_reset: bt-reset {
+            rockchip,pins = <4 RK_PB4 RK_FUNC_GPIO &pcfg_pull_none>;
+        };
+        bt_wake: bt-wake {
+            rockchip,pins = <4 RK_PB2 RK_FUNC_GPIO &pcfg_pull_none>;
+        };
+        bt_wake_host: bt-wake-host {
+            rockchip,pins = <4 RK_PB5 RK_FUNC_GPIO &pcfg_pull_up>;
+        };
     };
 
     /* wifi电源引脚配置 */
