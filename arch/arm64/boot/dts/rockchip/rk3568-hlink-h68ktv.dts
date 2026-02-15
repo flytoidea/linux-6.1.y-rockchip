@@ -894,7 +894,7 @@
 /* USB3.0 （OTG）控制器的DWC3核心 */
 &usbdrd_dwc3 {
     dr_mode = "otg";
-    phys = <&u2phy0_otg>, <&combphy0_us 0>;
+    phys = <&u2phy0_otg>, <&combphy0 0x04>;
     phy-names = "usb2-phy", "usb3-phy";
     maximum-speed = "super-speed";
     extcon = <&usb2phy0>;
@@ -909,7 +909,7 @@
 /* USB3.0主机控制器的DWC3核心 */
 &usbhost_dwc3 {
     dr_mode = "host";
-    phys = <&u2phy0_host>, <&combphy1_usq 0>;
+    phys = <&u2phy0_host>, <&combphy1 0x04>;
     phy-names = "usb2-phy", "usb3-phy";
     maximum-speed = "super-speed";
     status = "okay";
