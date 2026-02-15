@@ -729,7 +729,6 @@
     keep-power-in-suspend;
     non-removable;
     mmc-pwrseq = <&sdio_pwrseq>;
-    &sdmmc2 {
     vqmmc-supply = <&vcc_1v8>;
     vmmc-supply = <&vcc3v3_sys>;
     #address-cells = <1>;
