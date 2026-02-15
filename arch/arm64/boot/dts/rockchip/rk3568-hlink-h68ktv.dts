@@ -52,31 +52,6 @@
         linux,default-trigger = "none";
         status = "okay";
     };
-    
-    wireless-wlan {
-        compatible = "wlan-platdata";
-        rockchip,grf = <&grf>;
-        wifi_chip_type = "ap6275s";
-        pinctrl-names = "default";
-        pinctrl-0 = <&wifi_host_wake_irq>;
-        WIFI,host_wake_irq = <&gpio3 RK_PD4 GPIO_ACTIVE_HIGH>;
-        status = "okay";
-    };
-    
-    wireless-bluetooth {
-    compatible = "bluetooth-platdata";
-    clocks = <&rk809 1>;
-    clock-names = "ext_clock";
-    uart_rts_gpios = <&gpio2 RK_PB1 GPIO_ACTIVE_LOW>;
-    pinctrl-names = "default", "rts_gpio", "bt_pins";
-    pinctrl-0 = <&uart8_gpios &bt_reset &bt_wake &bt_wake_host>;
-    pinctrl-1 = <&uart8_gpios &bt_reset &bt_wake &bt_wake_host>;
-    pinctrl-2 = <&bt_reset &bt_wake &bt_wake_host>;
-    BT,reset_gpio = <&gpio4 RK_PB4 GPIO_ACTIVE_HIGH>;
-    BT,wake_gpio = <&gpio4 RK_PB2 GPIO_ACTIVE_HIGH>;
-    BT,wake_host_irq = <&gpio4 RK_PB5 GPIO_ACTIVE_HIGH>;
-    status = "okay";
-    };
 
     /* 电源/电压调节器定义 */
     dc_12v: dc-12v {
@@ -659,9 +634,24 @@
 
 /* UART8串口（带蓝牙）*/
 &uart8 {
-    pinctrl-names = "default";
-    pinctrl-0 = <&uart8m0_xfer &uart8m0_ctsn>;
     status = "okay";
+    pinctrl-names = "default";
+    pinctrl-0 = <&uart8m0_xfer &uart8m0_ctsn &uart8m0_rtsn>;
+    uart-has-rtscts;
+    
+    bluetooth {
+        compatible = "brcm,bcm4345c5";
+        clocks = <&rk809 1>;
+        clock-names = "lpo";
+        vbat-supply = <&vcc_3v3>;
+        vddio-supply = <&vcc_1v8>;
+        
+        device-wake-gpios = <&gpio4 RK_PB2 GPIO_ACTIVE_HIGH>;
+        host-wake-gpios = <&gpio4 RK_PB5 GPIO_ACTIVE_HIGH>;
+        shutdown-gpios = <&gpio4 RK_PB4 GPIO_ACTIVE_HIGH>;
+        
+        max-speed = <3000000>;
+    };
 };
 
 /* 温度传感器模数转换器 */
@@ -731,18 +721,27 @@
 
 /* SDIO控制器 */
 &sdmmc2 {
-    supports-sdio;
+    status = "okay";
+    max-frequency = <150000000>;
     bus-width = <4>;
-    disable-wp;
     cap-sd-highspeed;
     cap-sdio-irq;
     keep-power-in-suspend;
-    mmc-pwrseq = <&sdio_pwrseq>;
     non-removable;
-    pinctrl-names = "default";
-    pinctrl-0 = <&sdmmc2m0_bus4 &sdmmc2m0_cmd &sdmmc2m0_clk>;
-    sd-uhs-sdr104;
-    status = "okay";
+    mmc-pwrseq = <&sdio_pwrseq>;
+    
+    #address-cells = <1>;
+    #size-cells = <0>;
+    
+    brcmf: bcrmf@1 {
+        reg = <1>;
+        compatible = "brcm,bcm4329-fmac";
+        interrupts = <&gpio3 RK_PD4 IRQ_TYPE_LEVEL_HIGH>;
+        interrupt-parent = <&gpio3>;
+        interrupt-names = "host-wake";
+        pinctrl-names = "default";
+        pinctrl-0 = <&wifi_host_wake_irq>;
+    };
 };
 
 /* 引脚控制器配置 */
@@ -791,35 +790,16 @@
         };
     };
 
+    /* wifi引脚配置 */
+    wifi_host_wake_irq: wifi-host-wake-irq {
+            rockchip,pins = <3 RK_PD4 RK_FUNC_GPIO &pcfg_pull_up>;
+    };
+
     /* wifi电源引脚配置 */
     sdio-pwrseq {
         wifi_enable_h: wifi-enable-h {
             rockchip,pins = <3 RK_PD5 RK_FUNC_GPIO &pcfg_pull_none>;
         };
-    };
-
-    /* WiFi 唤醒中断引脚 */
-    wireless-wlan {
-        wifi_host_wake_irq: wifi-host-wake-irq {
-            rockchip,pins = <3 RK_PD4 RK_FUNC_GPIO &pcfg_pull_down>;
-        };
-    };
-
-    /* 蓝牙引脚 */
-    wireless-bluetooth {
-        uart8_gpios: uart8-gpios {
-            rockchip,pins = <2 RK_PB1 RK_FUNC_GPIO &pcfg_pull_none>;
-        };
-        bt_reset: bt-reset {
-            rockchip,pins = <4 RK_PB4 RK_FUNC_GPIO &pcfg_pull_none>;
-        };
-        bt_wake: bt-wake {
-            rockchip,pins = <4 RK_PB2 RK_FUNC_GPIO &pcfg_pull_none>;
-        };
-        bt_wake_host: bt-wake-host {
-            rockchip,pins = <4 RK_PB5 RK_FUNC_GPIO &pcfg_pull_none>;
-        };
-    };
 };
 
 /* PMU（电源管理单元）IO域配置 */
@@ -856,8 +836,6 @@
 /* SATA2接口 */
 &sata2 {
     status = "okay";
-    target-supply = <&vcc_sata>;
-    vccio-supply = <&vcc_1v8>;
 };
 
 /* USB2 PHY0 */
@@ -894,7 +872,7 @@
 /* USB3.0 （OTG）控制器的DWC3核心 */
 &usbdrd_dwc3 {
     dr_mode = "otg";
-    phys = <&u2phy0_otg>, <&combphy0_us>;
+    phys = <&u2phy0_otg>, <&combphy0_us 4>;
     phy-names = "usb2-phy", "usb3-phy";
     maximum-speed = "super-speed";
     extcon = <&usb2phy0>;
@@ -909,7 +887,7 @@
 /* USB3.0主机控制器的DWC3核心 */
 &usbhost_dwc3 {
     dr_mode = "host";
-    phys = <&u2phy0_host>, <&combphy1_usq>;
+    phys = <&u2phy0_host>, <&combphy1_usq 4>;
     phy-names = "usb2-phy", "usb3-phy";
     maximum-speed = "super-speed";
     status = "okay";
