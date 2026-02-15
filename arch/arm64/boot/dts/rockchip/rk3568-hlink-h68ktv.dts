@@ -728,6 +728,8 @@
 /*     mmc-pwrseq = <&sdio_pwrseq>; */
     vqmmc-supply = <&vcc_1v8>;
     vmmc-supply = <&vcc3v3_sys>;
+    pinctrl-names = "default";
+    pinctrl-0 = <&sdmmc2m0_bus4 &sdmmc2m0_cmd &sdmmc2m0_clk>;
     #address-cells = <1>;
     #size-cells = <0>;
     
