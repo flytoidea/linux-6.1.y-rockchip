@@ -10,7 +10,7 @@
 
 / {
     model = "Hlink H68KTV";
-    compatible = "hlink,h68ktv", "rockchip,rk3568";
+    compatible = "rockchip,rk3568", "hlink,h68ktv";
 
     aliases {
         ethernet0 = &gmac0;
