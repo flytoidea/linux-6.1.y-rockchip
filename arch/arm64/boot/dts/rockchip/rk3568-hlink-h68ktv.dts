@@ -26,24 +26,6 @@
         stdout-path = "serial2:1500000n8";
     };
 
-    leds {
-        compatible = "gpio-leds";
-
-        ssd_led: led-ssd {
-            label = "ssd";
-            gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
-            linux,default-trigger = "disk-activity";
-            retain-state-suspended;
-        };
-
-        sata_led: led-sata {
-            label = "sata";
-            gpios = <&gpio3 RK_PB1 GPIO_ACTIVE_HIGH>;
-            linux,default-trigger = "ata2";
-            retain-state-suspended;
-        };
-    };
-
     ws2812_rgb: rgb-led {
         compatible = "worldsemi,ws2812-pwm";
         pwms = <&pwm8 0 1250 0>;
@@ -761,7 +743,7 @@
         };
 
         soc_slppin_gpio: soc_slppin_gpio {
-            rockchip,pins = <0 RK_PA2 RK_FUNC_GPIO &pcfg_output_low>;
+            rockchip,pins = <0 RK_PA2 RK_FUNC_GPIO &pcfg_output_low_pull_down>;
         };
 
         soc_slppin_slp: soc_slppin_slp {
