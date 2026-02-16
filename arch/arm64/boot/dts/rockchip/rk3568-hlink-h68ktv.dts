@@ -31,7 +31,7 @@
 
         ssd_led: led-ssd {
             label = "ssd";
-            gpios = <&gpio3 RK_PB7 GPIO_ACTIVE_HIGH>;
+            gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
             linux,default-trigger = "disk-activity";
             retain-state-suspended;
         };
@@ -52,6 +52,8 @@
         linux,default-trigger = "none";
         status = "okay";
     };
+
+
 
     /* 电源/电压调节器定义 */
     dc_12v: dc-12v {
@@ -153,7 +155,7 @@
         compatible = "regulator-fixed";
         regulator-name = "vcc_sata";
         enable-active-high;
-        gpio = <&gpio0 RK_PB4 GPIO_ACTIVE_HIGH>;
+        gpio = <&gpio0 RK_PC2 GPIO_ACTIVE_HIGH>;
         pinctrl-names = "default";
         pinctrl-0 = <&sata_pwr>;
         regulator-always-on;
@@ -659,8 +661,6 @@
 
 /* 温度传感器模数转换器 */
 &tsadc {
-    rockchip,hw-tshut-mode = <1>;
-    rockchip,hw-tshut-polarity = <0>;
     status = "okay";
 };
 
@@ -773,10 +773,30 @@
         };
     };
 
+    tsadc {
+
+        tsadc_shutorg: tsadc-shutorg {
+            rockchip,pins = <0 RK_PA1 2 &pcfg_pull_none>;
+        };
+    };
+
+    gpio-func {
+    
+        tsadc_gpio_func: tsadc-gpio-func {
+            rockchip,pins = <0 RK_PA1 0 &pcfg_pull_none>;
+        };
+    };
+
+    pwm8 {
+        pwm8m0_pins: pwm8m0-pins {
+            rockchip,pins = <3 RK_PB1 5 &pcfg_pull_none>;
+        };
+    };
+
     /* SATA电源引脚配置 */
     sata {
         sata_pwr: sata-pwr {
-            rockchip,pins = <0 RK_PB4 RK_FUNC_GPIO &pcfg_pull_none>;
+            rockchip,pins = <0 RK_PC2 RK_FUNC_GPIO &pcfg_pull_none>;
         };
     };
 
@@ -788,13 +808,6 @@
 
         vcc5v0_host_en1: vcc5v0-host-en1 {
             rockchip,pins = <0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_none>;
-        };
-    };
-
-    /* pcie引脚配置 */
-    pcie {
-        pcie_reset: pcie-reset {
-            rockchip,pins = <2 RK_PD6 RK_FUNC_GPIO &pcfg_pull_none>;
         };
     };
 
@@ -821,7 +834,6 @@
         };
     };
 
-    
     uart8 {
         uart8m0_xfer: uart8m0-xfer {
             rockchip,pins =
@@ -1000,6 +1012,9 @@
 
 /* PCIe 3.0 x2控制器 */
 &pcie3x2 {
+    reg = <0x03 0xc0800000 0x00 0x00400000>,
+          <0x00 0xfe280000 0x00 0x00010000>;
+    reg-names = "pcie-dbi", "pcie-apb";
     num-lanes = <2>;
     rockchip,init-delay-ms = <100>;
     reset-gpios = <&gpio2 RK_PD6 GPIO_ACTIVE_HIGH>;
