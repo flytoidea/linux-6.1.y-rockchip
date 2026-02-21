@@ -634,18 +634,13 @@
         compatible = "brcm,bcm43438-bt";
         clocks = <&rk809 1>;
         clock-names = "lpo";
-        uart_rts_gpios = <&gpio2 RK_PB1 GPIO_ACTIVE_LOW>;
-        pinctrl-names = "default\0rts_gpio";
         vbat-supply = <&vcc_3v3>;
         vddio-supply = <&vcc_1v8>;
-        pinctrl-0 = <&uart8m0_rtsn>;
-        pinctrl-1 = <&uart8_gpios>;
         BT,reset_gpio = <&gpio4 RK_PB4 GPIO_ACTIVE_HIGH>;
         BT,wake_gpio = <&gpio4 RK_PB2 GPIO_ACTIVE_HIGH>;
         BT,wake_host_irq = <&gpio4 RK_PB5 GPIO_ACTIVE_HIGH>;
         max-speed = <3000000>;
         firmware-postfix = "4362A2";
-
     };
 };
 
@@ -858,12 +853,6 @@
         };
     };
 
-    wireless_bluetooth {
-        uart8_gpios: uart8-gpios {
-            rockchip,pins = <2 RK_PB1 0 &pcfg_pull_none>;
-        };
-    };
-
     /* wifi电源引脚配置 */
     sdio-pwrseq {
         wifi_enable_h: wifi-enable-h {
@@ -1022,16 +1011,11 @@
 
 /* PCIe 3.0 x2控制器 */
 &pcie3x2 {
-    reg = <0x03 0xc0800000 0x00 0x400000>,
-          <0x00 0xfe280000 0x00 0x10000>,
-          <0x00 0xf0000000 0x00 0x100000>;
-    reg-names = "pcie-dbi", "pcie-apb", "config";
-    bus-range = <0x20 0x2f>;
-    num-lanes = <2>;
     rockchip,init-delay-ms = <200>;
     prsnt-gpios = <&gpio2 RK_PD5 GPIO_ACTIVE_HIGH>;
     reset-gpios = <&gpio2 RK_PD6 GPIO_ACTIVE_LOW>;
     vpcie3v3-supply = <&vcc3v3_pcie>;
+    num-lanes = <2>;
     status = "okay";
 };
 
