@@ -637,6 +637,8 @@
         vbat-supply = <&vcc_3v3>;
         vddio-supply = <&vcc_1v8>;
         reset-gpios = <&gpio4 RK_PB4 GPIO_ACTIVE_HIGH>;
+        reset-active-delay = <200>;
+        reset-inactive-delay = <1000>
         device-wake-gpios = <&gpio4 RK_PB2 GPIO_ACTIVE_HIGH>;
         host-wake-gpios = <&gpio4 RK_PB5 GPIO_ACTIVE_LOW>;
         max-speed = <3000000>;
