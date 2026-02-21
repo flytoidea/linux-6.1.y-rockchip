@@ -636,9 +636,9 @@
         clock-names = "lpo";
         vbat-supply = <&vcc_3v3>;
         vddio-supply = <&vcc_1v8>;
-        BT,reset_gpio = <&gpio4 RK_PB4 GPIO_ACTIVE_HIGH>;
-        BT,wake_gpio = <&gpio4 RK_PB2 GPIO_ACTIVE_HIGH>;
-        BT,wake_host_irq = <&gpio4 RK_PB5 GPIO_ACTIVE_HIGH>;
+        reset-gpios = <&gpio4 RK_PB4 GPIO_ACTIVE_HIGH>;
+        device-wake-gpios = <&gpio4 RK_PB2 GPIO_ACTIVE_HIGH>;
+        host-wake-gpios = <&gpio4 RK_PB5 GPIO_ACTIVE_HIGH>;
         max-speed = <3000000>;
         firmware-postfix = "4362A2";
     };
