@@ -631,9 +631,9 @@
     uart-has-rtscts;
 
     bluetooth {
-        compatible = "brcm,bcm4375-bt", "brcm,bcm-bt";
+        compatible = "brcm,bcm43438-bt";
         clocks = <&rk809 1>;
-        clock-names = "ext_clock";
+        clock-names = "lpo";
         uart_rts_gpios = <&gpio2 RK_PB1 GPIO_ACTIVE_LOW>;
         pinctrl-names = "default\0rts_gpio";
         vbat-supply = <&vcc_3v3>;
@@ -644,6 +644,7 @@
         BT,wake_gpio = <&gpio4 RK_PB2 GPIO_ACTIVE_HIGH>;
         BT,wake_host_irq = <&gpio4 RK_PB5 GPIO_ACTIVE_HIGH>;
         max-speed = <3000000>;
+        firmware-postfix = "4362A2";
 
     };
 };
@@ -739,6 +740,7 @@
         pinctrl-names = "default";
         pinctrl-0 = <&wifi_host_wake_irq>;
         rockchip,grf = <&grf>;
+        firmware-postfix = "4375";
     };
 };
 
