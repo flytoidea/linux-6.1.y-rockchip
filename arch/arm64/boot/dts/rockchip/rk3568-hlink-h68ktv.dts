@@ -1022,15 +1022,15 @@
 
 /* PCIe 3.0 x2控制器 */
 &pcie3x2 {
-    reg = <0x03 0xc0800000 0x00 0x00400000>,
-          <0x00 0xfe280000 0x00 0x00010000>,
-          <0x03 0xe0000000 0x00 0x01000000>;
+    reg = <0x03 0xc0800000 0x00 0x400000>,
+          <0x00 0xfe280000 0x00 0x10000>,
+          <0x00 0xf0000000 0x00 0x100000>;
     reg-names = "pcie-dbi", "pcie-apb", "config";
     bus-range = <0x20 0x2f>;
     num-lanes = <2>;
     rockchip,init-delay-ms = <200>;
     prsnt-gpios = <&gpio2 RK_PD5 GPIO_ACTIVE_HIGH>;
-    reset-gpios = <&gpio2 RK_PD6 GPIO_ACTIVE_HIGH>;
+    reset-gpios = <&gpio2 RK_PD6 GPIO_ACTIVE_LOW>;
     vpcie3v3-supply = <&vcc3v3_pcie>;
     status = "okay";
 };
