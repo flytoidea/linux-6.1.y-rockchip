@@ -691,8 +691,6 @@
 /* PCIe 3.0物理层接口 */
 &pcie30phy {
     rockchip,pipe-grf = <&pipegrf>;
-    assigned-clocks = <&pmucru CLK_PCIE30PHY_REF_M>, <&pmucru CLK_PCIE30PHY_REF_N>;
-    assigned-clock-rates = <100000000>, <100000000>;
     status = "okay";
 };
 
@@ -1029,6 +1027,7 @@
     bus-range = <0x20 0x2f>;
     num-lanes = <2>;
     rockchip,init-delay-ms = <200>;
+    prsnt-gpios = <&gpio2 RK_PD5 GPIO_ACTIVE_HIGH>;
     reset-gpios = <&gpio2 RK_PD6 GPIO_ACTIVE_HIGH>;
     vpcie3v3-supply = <&vcc3v3_pcie>;
     status = "okay";
