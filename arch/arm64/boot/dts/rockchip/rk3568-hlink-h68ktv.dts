@@ -37,10 +37,20 @@
 
     gpio-leds {
         compatible = "gpio-leds";
-        battery_charging {
-            label = "battery_charging";
+        pinctrl-names = "default";
+        pinctrl-0 = <&led_sata &led_ssd>;
+
+        led-sata {
+            label = "sata";
+            gpios = <&gpio3 RK_PC6 GPIO_ACTIVE_HIGH>;
+            linux,default-trigger = "disk-activity";
+            retain-state-suspended;
+        };
+
+        led-ssd {
+            label = "ssd";
             gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_HIGH>;
-            linux,default-trigger = "battery-charging";
+            linux,default-trigger = "disk-activity";
             retain-state-suspended;
         };
     };
@@ -776,7 +786,11 @@
     };
 
     leds {
-        battery_charging_pin: battery_charging-pin {
+        led_sata: led-sata-pin {
+            rockchip,pins = <3 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>;
+        };
+
+        led_ssd: led-ssd-pin {
             rockchip,pins = <3 RK_PC5 RK_FUNC_GPIO &pcfg_pull_none>;
         };
     };
