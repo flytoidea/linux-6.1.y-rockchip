@@ -22,7 +22,7 @@
 
     /* 引导参数选择 */
     chosen {
-        bootargs = "console=ttyS2,1500000n8 earlycon=uart8250,mmio32,0xfe660000 initcall_blacklist=dw_pcie_driver_init";
+        bootargs = "console=ttyS2,1500000n8 earlycon=uart8250,mmio32,0xfe660000 ";
         stdout-path = "serial2:1500000n8";
     };
 
