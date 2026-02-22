@@ -22,7 +22,7 @@
 
     /* 引导参数选择 */
     chosen {
-        bootargs = "console=ttyS2,1500000n8 earlycon=uart8250,mmio32,0xfe660000 ";
+        bootargs = "console=ttyS2,1500000n8 earlycon=uart8250,mmio32,0xfe660000";
         stdout-path = "serial2:1500000n8";
     };
 
@@ -96,6 +96,7 @@
         gpio = <&gpio0 RK_PA5 GPIO_ACTIVE_HIGH>;
         pinctrl-names = "default";
         pinctrl-0 = <&vcc5v0_host_en1>;
+        regulator-boot-on;
         regulator-always-on;
         regulator-min-microvolt = <5000000>;
         regulator-max-microvolt = <5000000>;
@@ -107,6 +108,7 @@
         regulator-name = "vcc5v0_otg";
         regulator-min-microvolt = <5000000>;
         regulator-max-microvolt = <5000000>;
+        enable-active-high;
         vin-supply = <&vcc5v0_usb>;
     };
 
@@ -154,7 +156,7 @@
         regulator-boot-on;
     };
 
-    sdio_pwrseq: sdio_pwrseq {
+    sdio_pwrseq: sdio-pwrseq {
         compatible = "mmc-pwrseq-simple";
         clocks = <&rk809 1>;
         clock-names = "ext_clock";
@@ -162,7 +164,6 @@
         pinctrl-0 = <&wifi_enable_h>;
         reset-gpios = <&gpio3 RK_PD5 GPIO_ACTIVE_LOW>;
         post-power-on-delay-ms = <200>;
-        status = "okay";
     };
 };
 
