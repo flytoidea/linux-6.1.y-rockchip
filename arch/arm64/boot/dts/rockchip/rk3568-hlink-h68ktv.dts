@@ -9,6 +9,7 @@
 #include "rk3568.dtsi"
 
 / {
+    ranges;
     model = "Hlink H68KTV";
     compatible = "rockchip,rk3568", "hlink,h68ktv";
 
@@ -156,7 +157,7 @@
         regulator-boot-on;
     };
 
-    sdio_pwrseq: sdio-pwrseq {
+    sdio_pwrseq: sdio_pwrseq {
         compatible = "mmc-pwrseq-simple";
         clocks = <&rk809 1>;
         clock-names = "ext_clock";
@@ -1018,9 +1019,6 @@
 
 /* PCIe 3.0 x2控制器 */
 &pcie3x2 {
-    reg = <0x00 0xc0800000 0x00 0x400000
-       0x00 0xfe280000 0x00 0x10000
-       0x00 0xf0000000 0x00 0x100000>;
     pinctrl-names = "default";
     pinctrl-0 = <&pcie30x2m1_pins>;
     rockchip,init-delay-ms = <100>;
