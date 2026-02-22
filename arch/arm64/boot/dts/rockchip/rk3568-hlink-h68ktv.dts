@@ -1012,6 +1012,7 @@
 
 /* PCIe 3.0物理层接口 */
 &pcie30phy {
+    compatible = "rockchip,rk3568-pcie-phy";
     status = "okay";
 };
 
