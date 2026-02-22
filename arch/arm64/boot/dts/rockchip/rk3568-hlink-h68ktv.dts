@@ -688,6 +688,7 @@
 /* PCIe 3.0物理层接口 */
 &pcie30phy {
     rockchip,pipe-grf = <&pipegrf>;
+    data-lanes = <1 2>;
     status = "okay";
 };
 
@@ -1012,9 +1013,13 @@
 
 /* PCIe 3.0 x2控制器 */
 &pcie3x2 {
+    reg = <0x03 0xc0800000 0x00 0x400000>,
+          <0x00 0xfe280000 0x00 0x10000>,
+          <0x00 0xf0000000 0x00 0x1000000>;
+    reg-names = "pcie-dbi", "pcie-apb", "config";
     rockchip,init-delay-ms = <200>;
     prsnt-gpios = <&gpio2 RK_PD5 GPIO_ACTIVE_HIGH>;
-    reset-gpios = <&gpio2 RK_PD6 GPIO_ACTIVE_LOW>;
+    reset-gpios = <&gpio2 RK_PD6 GPIO_ACTIVE_HIGH>;
     vpcie3v3-supply = <&vcc3v3_pcie>;
     num-lanes = <2>;
     status = "okay";
