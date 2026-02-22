@@ -636,10 +636,10 @@
         clock-names = "lpo";
         vbat-supply = <&vcc_3v3>;
         vddio-supply = <&vcc_1v8>;
-        reset-gpios = <&gpio4 RK_PB4 GPIO_ACTIVE_HIGH>;
-        reset-active-delay = <200>;
+        shutdown-gpios = <&gpio4 RK_PB4 GPIO_ACTIVE_HIGH>;
+        reset-delay-ms = <200>;
         device-wake-gpios = <&gpio4 RK_PB2 GPIO_ACTIVE_HIGH>;
-        host-wake-gpios = <&gpio4 RK_PB5 GPIO_ACTIVE_HIGH>;
+        host-wake-gpios = <&gpio4 RK_PB5 GPIO_ACTIVE_LOW>;
         max-speed = <3000000>;
         firmware-postfix = "4362A2";
     };
@@ -736,7 +736,7 @@
         pinctrl-names = "default";
         pinctrl-0 = <&wifi_host_wake_irq>;
         rockchip,grf = <&grf>;
-        firmware-postfix = "43752";
+        firmware-postfix = "4375";
     };
 };
 
