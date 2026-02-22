@@ -1011,34 +1011,16 @@
 
 /* PCIe 3.0物理层接口 */
 &pcie30phy {
-    rockchip,pipe-grf = <&pipegrf>;
     status = "okay";
-};
-
-&pcie2x1 {
-    status = "disabled";
-};
-&pcie3x1 {
-    status = "disabled";
 };
 
 /* PCIe 3.0 x2控制器 */
 &pcie3x2 {
-    reg = <0x03 0xc0800000 0x00 0x400000>,
-          <0x00 0xfe280000 0x00 0x10000>;
-    reg-names = "pcie-dbi", "pcie-apb";
-
-    ranges = <0x08000000 0x00 0xf0000000 0x00 0xf0000000 0x00 0x1000000>,
-             <0x01000000 0x00 0x00000000 0x00 0xf5f00000 0x00 0x00100000>,
-             <0x02000000 0x00 0x40000000 0x03 0x00000000 0x00 0x40000000>;
-
     pinctrl-names = "default";
     pinctrl-0 = <&pcie30x2m1_pins>;
-
-    reset-gpios = <&gpio2 RK_PD6 GPIO_ACTIVE_LOW>;
+    rockchip,init-delay-ms = <100>;
+    reset-gpios = <&gpio2 RK_PD6 GPIO_ACTIVE_HIGH>;
     vpcie3v3-supply = <&vcc3v3_pcie>;
-    prsnt-gpios = <&gpio2 RK_PD5 GPIO_ACTIVE_HIGH>;
-    num-lanes = <2>;
     status = "okay";
 };
 
