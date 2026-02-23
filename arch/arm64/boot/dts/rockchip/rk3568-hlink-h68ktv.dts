@@ -1076,18 +1076,6 @@
     status = "okay";
 };
 
-/* Rockchip神经网络处理器 */
-&rknpu {
-    memory-region = <&rknpu_reserved>;
-    rknpu-supply = <&vdd_npu>;
-    status = "okay";
-};
-
-/* Rockchip神经网络处理器内存管理单元 */
-&rknpu_mmu {
-    status = "okay";
-};
-
 &rk_rga {
     status = "okay";
 };
