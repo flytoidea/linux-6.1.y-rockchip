@@ -12,10 +12,6 @@
     model = "Hlink H68KTV";
     compatible = "rockchip,rk3568", "hlink,h68ktv";
 
-    ranges = <0x0 0xc0800000 0x3 0xc0800000 0x0 0x400000>,
-            <0x0 0xfe280000 0x0 0xfe280000 0x0 0x10000>,
-            <0x0 0xf0000000 0x0 0xf0000000 0x0 0x100000>;
-
     aliases {
         ethernet0 = &gmac0;
         ethernet1 = &gmac1;
@@ -811,12 +807,6 @@
         };
     };
 
-    pcie30x2 {
-        pcie30x2m1_pins: pcie30x2m1-pins {
-            rockchip,pins = <2 RK_PD6 RK_FUNC_GPIO &pcfg_pull_none>;
-        };
-    };
-
     /* SATA电源引脚配置 */
     sata {
         sata_pwr: sata-pwr {
@@ -1036,12 +1026,9 @@
 
 /* PCIe 3.0 x2控制器 */
 &pcie3x2 {
-    reg = <0x0 0xc0800000 0x0 0x400000>,
-          <0x0 0xfe280000 0x0 0x10000>,
-          <0x0 0xf0000000 0x0 0x100000>;
-    reg-names = "dbi", "apb", "config";
-    pinctrl-names = "default";
-    pinctrl-0 = <&pcie30x2m1_pins>;
+    reg = <0x3 0xc0800000 0x0 0x400000>,
+          <0x0 0xfe280000 0x0 0x10000>;
+    reg-names = "dbi", "apb";
     rockchip,init-delay-ms = <100>;
     reset-gpios = <&gpio2 RK_PD6 GPIO_ACTIVE_HIGH>;
     vpcie3v3-supply = <&vcc3v3_pcie>;
